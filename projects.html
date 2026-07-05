@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!--
+  PROJECTS PAGE
+  ------------------------------------------------------------------
+  To add a new project: copy one <article class="project-card"> block
+  and edit the image, tags, title, description, and links. Recommended
+  image size is 1200x800 — drop new files into assets/projects/.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Vaishnav Pandey</title>
+  <meta name="description" content="Selected projects by Vaishnav Pandey: products, platforms, and tools built as a founder and product engineer." />
+  <link rel="canonical" href="https://www.alexrivera.dev/projects.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Projects — Vaishnav Pandey" />
+  <meta property="og:description" content="Selected projects: products, platforms, and tools built as a founder and product engineer." />
+  <meta property="og:image" content="https://www.alexrivera.dev/assets/images/og-image.jpg" />
+  <meta property="og:url" content="https://www.alexrivera.dev/projects.html" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Projects — Vaishnav Pandey" />
+  <meta name="twitter:image" content="https://www.alexrivera.dev/assets/images/og-image.jpg" />
+
+  <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="assets/images/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="navbar glass" aria-label="Primary">
+      <a href="index.html" class="nav-logo"><span class="dot" aria-hidden="true"></span>Vaishnav Pandey</a>
+      <div class="nav-links">
+        <a href="index.html#hero">Home</a>
+        <a href="about.html">About</a>
+        <a href="blog.html">Blog</a>
+        <a href="index.html#social">Social</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html#hero">Home</a>
+    <a href="about.html">About</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#social">Social</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <main id="main">
+    <section class="page-hero container">
+      <span class="eyebrow reveal">Projects</span>
+      <h1 class="reveal reveal-delay-1">Products shipped, from first commit to production.</h1>
+      <p class="reveal reveal-delay-2">A selection of the work I'm proudest of — some built solo, most built with a small, sharp team.</p>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <!-- CUSTOMIZE: duplicate a <article class="project-card"> block per project -->
+        <div class="grid projects-grid">
+
+          <article class="project-card glass glass-hover reveal">
+            <div class="project-media">
+              <img src="assets/projects/project-01.jpg" alt="Cover artwork for Northwind Analytics" loading="lazy" width="1200" height="800" />
+            </div>
+            <div class="project-body">
+              <div class="project-tags"><span class="tag">Product</span><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span></div>
+              <h3>Northwind Analytics</h3>
+              <p>A real-time logistics dashboard that helps freight teams predict delays before they happen, cutting late deliveries by 22% for its largest customer.</p>
+              <div class="project-links">
+                <!-- CUSTOMIZE: replace # with your repo / demo URLs -->
+                <a href="#" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">GitHub</a>
+                <a href="#" class="btn btn-sm btn-primary" target="_blank" rel="noopener">Live demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass glass-hover reveal reveal-delay-1">
+            <div class="project-media">
+              <img src="assets/projects/project-02.jpg" alt="Cover artwork for Loop Feedback" loading="lazy" width="1200" height="800" />
+            </div>
+            <div class="project-body">
+              <div class="project-tags"><span class="tag">SaaS</span><span class="tag">TypeScript</span><span class="tag">GraphQL</span></div>
+              <h3>Loop Feedback</h3>
+              <p>Turns scattered customer feedback into a single prioritized roadmap. Adopted by 200+ product teams within its first year.</p>
+              <div class="project-links">
+                <a href="#" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">GitHub</a>
+                <a href="#" class="btn btn-sm btn-primary" target="_blank" rel="noopener">Live demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass glass-hover reveal reveal-delay-2">
+            <div class="project-media">
+              <img src="assets/projects/project-03.jpg" alt="Cover artwork for Fieldnote" loading="lazy" width="1200" height="800" />
+            </div>
+            <div class="project-body">
+              <div class="project-tags"><span class="tag">Design</span><span class="tag">Python</span><span class="tag">Full-text search</span></div>
+              <h3>Fieldnote</h3>
+              <p>A research repository that keeps interview highlights, tags, and themes in one searchable place for design teams.</p>
+              <div class="project-links">
+                <a href="#" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">GitHub</a>
+                <a href="#" class="btn btn-sm btn-primary" target="_blank" rel="noopener">Live demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass glass-hover reveal">
+            <div class="project-media">
+              <img src="assets/projects/project-04.jpg" alt="Cover artwork for Anchor Payroll" loading="lazy" width="1200" height="800" />
+            </div>
+            <div class="project-body">
+              <div class="project-tags"><span class="tag">Fintech</span><span class="tag">Next.js</span><span class="tag">AWS</span></div>
+              <h3>Anchor Payroll</h3>
+              <p>Contractor payroll for distributed teams, handling compliance across 30 countries with same-day payouts.</p>
+              <div class="project-links">
+                <a href="#" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">GitHub</a>
+                <a href="#" class="btn btn-sm btn-primary" target="_blank" rel="noopener">Live demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass glass-hover reveal reveal-delay-1">
+            <div class="project-media">
+              <img src="assets/projects/project-05.jpg" alt="Cover artwork for Kiln Design System" loading="lazy" width="1200" height="800" />
+            </div>
+            <div class="project-body">
+              <div class="project-tags"><span class="tag">Design System</span><span class="tag">Figma</span><span class="tag">Tailwind CSS</span></div>
+              <h3>Kiln Design System</h3>
+              <p>An open component library and Figma kit used internally across three product teams to ship consistent UI faster.</p>
+              <div class="project-links">
+                <a href="#" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">GitHub</a>
+                <a href="#" class="btn btn-sm btn-primary" target="_blank" rel="noopener">Live demo</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card glass glass-hover reveal reveal-delay-2">
+            <div class="project-media">
+              <img src="assets/projects/project-06.jpg" alt="Cover artwork for Signal Ops" loading="lazy" width="1200" height="800" />
+            </div>
+            <div class="project-body">
+              <div class="project-tags"><span class="tag">DevOps</span><span class="tag">Docker</span><span class="tag">Redis</span></div>
+              <h3>Signal Ops</h3>
+              <p>An incident response tool that turns on-call alerts into a single timeline, with automated post-mortem drafts.</p>
+              <div class="project-links">
+                <a href="#" class="btn btn-sm btn-ghost" target="_blank" rel="noopener">GitHub</a>
+                <a href="#" class="btn btn-sm btn-primary" target="_blank" rel="noopener">Live demo</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="nav-logo"><span class="dot" aria-hidden="true"></span>Vaishnav Pandey</div>
+          <p>Founder, product engineer, and designer. Based in Lisbon, Portugal — working with teams worldwide.</p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Site</h4>
+            <a href="index.html#hero">Home</a>
+            <a href="about.html">About</a>
+            <a href="blog.html">Blog</a>
+          </div>
+          <div class="footer-col">
+            <h4>Connect</h4>
+            <a href="index.html#social">Social</a>
+            <a href="contact.html">Contact</a>
+            <a href="mailto:hello@alexrivera.dev">Email</a>
+          </div>
+        </div>
+      </div>
+      <hr class="divider" />
+      <div class="footer-bottom">
+        <p>&copy; <span data-year>2026</span> Vaishnav Pandey. All rights reserved.</p>
+        <p>Built with HTML, CSS &amp; JavaScript</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

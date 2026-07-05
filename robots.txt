@@ -1,0 +1,5 @@
+# CUSTOMIZE: update the sitemap URL below once you know your final domain.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.alexrivera.dev/sitemap.xml
