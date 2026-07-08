@@ -230,49 +230,178 @@
   }
 
   /* ---------------------------------------------------------------
-     Contact form — front-end validation + simulated submission.
-     There is no backend wired up by default. To connect a real
-     endpoint (Formspree, Netlify Forms, EmailJS, your own API):
-       1. Remove the e.preventDefault() fake-submit block below.
-       2. Point the <form> action/method at your endpoint in
-          contact.html, or call fetch() here with your provider's URL.
+     Contact form — front-end validation + backend submit (if configured).
+     Set data-endpoint on #contact-form to send with fetch() to providers
+     like Formspree. If no endpoint is set, it falls back to mailto.
   ------------------------------------------------------------------ */
   function initContactForm() {
     var form = document.querySelector("#contact-form");
     if (!form) return;
     var status = form.querySelector(".form-status");
+    var submitBtn = form.querySelector("button[type='submit']");
+    var endpoint = (form.getAttribute("data-endpoint") || "").trim();
+    var recipient = form.getAttribute("data-recipient") || "vaishnav.pandeyartist2@gmail.com";
+    var isSubmitting = false;
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var valid = true;
+    function setStatus(message, isError) {
+      if (!status) return;
+      status.textContent = message;
+      status.className = isError ? "form-status" : "form-status is-success";
+      status.style.display = "block";
+      status.style.color = isError ? "var(--accent-coral)" : "";
+    }
 
-      form.querySelectorAll("[required]").forEach(function (field) {
-        var row = field.closest(".form-row");
-        var ok = field.value.trim().length > 0;
-        if (field.type === "email" && ok) {
-          ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim());
-        }
-        if (row) row.classList.toggle("has-error", !ok);
-        if (!ok) valid = false;
+    function setFieldError(field, hasError) {
+      var row = field.closest(".form-row");
+      if (!row) return;
+      row.classList.toggle("has-error", hasError);
+    }
+
+    function isValidEmail(email) {
+      var value = (email || "").trim();
+      if (!value || value.length > 254) return false;
+      return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/.test(value);
+    }
+
+    function isGarbageMessage(message) {
+      var text = (message || "").replace(/\s+/g, " ").trim();
+      if (!text) return true;
+
+      var words = text.split(" ").filter(Boolean);
+      if (text.length < 15 || words.length < 3) return true;
+
+      var links = text.match(/https?:\/\/|www\./gi);
+      if (links && links.length > 2) return true;
+
+      // Reject repeated single-character spam like "aaaaaaa" or "!!!!!!".
+      if (/(.)\1{7,}/.test(text)) return true;
+
+      var alpha = text.toLowerCase().replace(/[^a-z]/g, "");
+      if (alpha.length >= 12) {
+        var unique = new Set(alpha.split("")).size;
+        var diversity = unique / alpha.length;
+        if (diversity < 0.18) return true;
+      }
+
+      var spamPhrases = [
+        "buy now", "earn money", "work from home", "click here", "free crypto",
+        "win cash", "loan approved", "guaranteed returns", "cheap followers"
+      ];
+      var lower = text.toLowerCase();
+      return spamPhrases.some(function (phrase) { return lower.indexOf(phrase) !== -1; });
+    }
+
+    function openMailClient(name, email, subject, message) {
+      var finalSubject = subject && subject.trim() ? subject.trim() : "Contact from portfolio site";
+      var body = [
+        "Name: " + name,
+        "Email: " + email,
+        "",
+        message
+      ].join("\n");
+      var mailtoUrl = "mailto:" + encodeURIComponent(recipient) + "?subject=" + encodeURIComponent(finalSubject) + "&body=" + encodeURIComponent(body);
+      window.location.href = mailtoUrl;
+    }
+
+    function setSubmitting(submitting) {
+      isSubmitting = submitting;
+      if (!submitBtn) return;
+      submitBtn.disabled = submitting;
+      submitBtn.setAttribute("aria-busy", submitting ? "true" : "false");
+      submitBtn.textContent = submitting ? "Sending..." : "Send message";
+    }
+
+    function resetFormState() {
+      form.reset();
+      form.querySelectorAll(".form-row").forEach(function (row) { row.classList.remove("has-error"); });
+    }
+
+    function sendToEndpoint(payload) {
+      return fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
+    }
 
-      if (!valid) {
-        if (status) {
-          status.textContent = "Please fill in every field with a valid value.";
-          status.className = "form-status";
-          status.style.display = "block";
-          status.style.color = "var(--accent-coral)";
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (isSubmitting) return;
+      var nameField = form.querySelector("#name");
+      var emailField = form.querySelector("#email");
+      var subjectField = form.querySelector("#subject");
+      var messageField = form.querySelector("#message");
+      var websiteField = form.querySelector("#website");
+
+      if (!nameField || !emailField || !subjectField || !messageField) return;
+
+      var name = nameField.value.trim();
+      var email = emailField.value.trim();
+      var subject = subjectField.value.trim();
+      var message = messageField.value.trim();
+      var website = websiteField ? websiteField.value.trim() : "";
+
+      if (website.length > 0) {
+        // Honeypot filled => likely bot; silently accept and clear.
+        resetFormState();
+        setStatus("Thanks — your message has been received.", false);
+        return;
+      }
+
+      var hasNameError = name.length === 0;
+      var hasEmailError = !isValidEmail(email);
+      var hasSubjectError = subject.length < 3;
+      var hasMessageError = isGarbageMessage(message);
+
+      setFieldError(nameField, hasNameError);
+      setFieldError(emailField, hasEmailError);
+      setFieldError(subjectField, hasSubjectError);
+      setFieldError(messageField, hasMessageError);
+
+      if (hasNameError || hasEmailError || hasSubjectError || hasMessageError) {
+        if (hasMessageError) {
+          setStatus("Please write a meaningful message (at least a few words, no spammy text).", true);
+        } else if (hasEmailError) {
+          setStatus("Please enter a valid email address before sending.", true);
+        } else {
+          setStatus("Please fill in every field with valid details.", true);
         }
         return;
       }
 
-      // ---- Fake submit success state (replace with real request) ----
-      if (status) {
-        status.textContent = "Thanks — your message has been noted. I'll reply within 2 business days.";
-        status.className = "form-status is-success";
+      if (!endpoint) {
+        openMailClient(name, email, subject, message);
+        setStatus("Opening your email app to send the message...", false);
+        resetFormState();
+        return;
       }
-      form.reset();
-      form.querySelectorAll(".form-row").forEach(function (row) { row.classList.remove("has-error"); });
+
+      try {
+        setSubmitting(true);
+        var response = await sendToEndpoint({
+          name: name,
+          email: email,
+          subject: subject,
+          message: message,
+          _subject: "Portfolio contact: " + subject,
+          _replyto: email
+        });
+
+        if (!response.ok) {
+          throw new Error("Submit failed with status " + response.status);
+        }
+
+        setStatus("Message sent successfully. Thanks for reaching out.", false);
+        resetFormState();
+      } catch (err) {
+        setStatus("Couldn't send directly right now. Opening your email app instead.", true);
+        openMailClient(name, email, subject, message);
+      } finally {
+        setSubmitting(false);
+      }
     });
   }
 

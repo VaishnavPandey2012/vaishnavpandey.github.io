@@ -2,10 +2,9 @@
 <!--
   CONTACT PAGE
   ------------------------------------------------------------------
-  The form below is front-end only (see js/main.js -> initContactForm
-  for validation + a simulated success message). To receive real
-  submissions, wire it up to a form backend such as Formspree,
-  Netlify Forms, or EmailJS — instructions are in README.md.
+  The form below validates user input in js/main.js, then sends
+  through fetch() if data-endpoint is set (e.g. Formspree). If not,
+  it falls back to opening a prefilled mailto draft.
 -->
 <html lang="en">
 <head>
@@ -117,7 +116,7 @@
           </div>
         </div>
 
-        <form class="contact-form glass reveal reveal-delay-1" id="contact-form" novalidate>
+        <form class="contact-form glass reveal reveal-delay-1" id="contact-form" data-recipient="vaishnav.pandeyartist2@gmail.com" data-endpoint="https://formspree.io/f/xkolalvk" novalidate>
           <div class="form-row">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required autocomplete="name" />
@@ -138,6 +137,10 @@
             <textarea id="message" name="message" rows="6" required></textarea>
             <span class="error-msg">Please add a message.</span>
           </div>
+
+          <!-- Honeypot field: should stay empty for real users -->
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute; left:-9999px; opacity:0; pointer-events:none;" />
+
           <button type="submit" class="btn btn-primary btn-block">Send message</button>
           <div class="form-status" role="status" aria-live="polite"></div>
         </form>

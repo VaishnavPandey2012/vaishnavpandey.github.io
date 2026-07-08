@@ -142,16 +142,23 @@ Stat numbers use `data-count` (the target number) and an optional
 `.skill-bar` element in `about.html`.
 
 ### Contact form
-The form in `contact.html` validates on the front end and shows a
-simulated success message (`js/main.js` → `initContactForm`). To
-actually receive messages, pick one:
-- **Formspree** — set the form's `action` to your Formspree endpoint
-  and `method="POST"`, then remove the `e.preventDefault()` fake-submit
-  logic in `initContactForm`.
-- **Netlify Forms** — add `data-netlify="true"` and a hidden
-  `form-name` input if you deploy on Netlify instead of GitHub Pages.
-- **EmailJS** — call the EmailJS SDK from inside `initContactForm`
-  instead of the simulated success block.
+The form in `contact.html` now does three things by default:
+- Validates fields (including stricter email validation).
+- Blocks garbage / spammy message patterns.
+- Sends with `fetch()` when `data-endpoint` is set on `#contact-form`.
+
+If `data-endpoint` is empty, it falls back to opening a prefilled
+`mailto:` draft to `data-recipient`.
+
+Recommended setup:
+- **Formspree**
+  1. Create a Formspree form and copy your endpoint URL
+     (example: `https://formspree.io/f/xxxxabcd`).
+  2. In `contact.html`, set `data-endpoint="https://formspree.io/f/xxxxabcd"`
+     on the form.
+  3. Keep `data-recipient` as fallback.
+
+No build step or extra package is required.
 
 ---
 
