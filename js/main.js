@@ -23,6 +23,7 @@
     initSmoothAnchors();
     initScrollReveal();
     initAuroraCursor();
+    initPostReactions();
     initContactForm();
     initPageTransition();
   });
@@ -197,6 +198,165 @@
       }
       requestAnimationFrame(step);
     });
+  }
+
+  /* ---------------------------------------------------------------
+     Blog post reactions + comments for the GitHub Universe article.
+     Stored in localStorage so the page stays static but still feels
+     interactive.
+  ------------------------------------------------------------------ */
+  function initPostReactions() {
+    var reactionBars = document.querySelectorAll("[data-post-id]");
+    var commentThread = document.querySelector("[data-comment-thread]");
+    if (!reactionBars.length && !commentThread) return;
+
+    var stateByPost = {};
+
+    function storageKey(postId) {
+      return "blog-post-state:" + postId;
+    }
+
+    function loadState(postId) {
+      if (stateByPost[postId]) return stateByPost[postId];
+      var fallback = { reactions: { like: 0, dislike: 0 }, comments: [] };
+      try {
+        var raw = window.localStorage.getItem(storageKey(postId));
+        if (!raw) {
+          stateByPost[postId] = fallback;
+          return fallback;
+        }
+        var parsed = JSON.parse(raw);
+        stateByPost[postId] = {
+          reactions: {
+            like: Number(parsed.reactions && parsed.reactions.like) || 0,
+            dislike: Number(parsed.reactions && parsed.reactions.dislike) || 0
+          },
+          comments: Array.isArray(parsed.comments) ? parsed.comments : []
+        };
+      } catch (err) {
+        stateByPost[postId] = fallback;
+      }
+      return stateByPost[postId];
+    }
+
+    function saveState(postId) {
+      try {
+        window.localStorage.setItem(storageKey(postId), JSON.stringify(stateByPost[postId]));
+      } catch (err) {}
+    }
+
+    function syncReactionBars(postId) {
+      var state = loadState(postId);
+      document.querySelectorAll('[data-post-id="' + postId + '"]').forEach(function (bar) {
+        bar.querySelectorAll("[data-reaction]").forEach(function (button) {
+          var type = button.getAttribute("data-reaction");
+          var countEl = button.querySelector("[data-reaction-count]");
+          if (countEl) countEl.textContent = state.reactions[type] || 0;
+          button.classList.toggle("is-active", false);
+          button.setAttribute("aria-pressed", "false");
+        });
+      });
+    }
+
+    function renderComments(thread) {
+      var postId = thread.getAttribute("data-comment-thread");
+      var state = loadState(postId);
+      var list = thread.querySelector("[data-comment-list]");
+      if (!list) return;
+
+      if (!state.comments.length) {
+        list.innerHTML = '<div class="comment-empty glass"><p style="margin:0;">No comments yet. Be the first to share your thoughts.</p></div>';
+        return;
+      }
+
+      list.innerHTML = state.comments.slice().reverse().map(function (comment) {
+        return [
+          '<article class="comment-item glass">',
+          '<div class="comment-meta">',
+          '<strong>' + escapeHtml(comment.name) + '</strong>',
+          '<span>' + formatCommentTime(comment.createdAt) + '</span>',
+          '</div>',
+          '<p>' + escapeHtml(comment.text).replace(/\n/g, "<br />") + '</p>',
+          '</article>'
+        ].join("");
+      }).join("");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatCommentTime(value) {
+      var date = new Date(value);
+      if (isNaN(date.getTime())) return "Just now";
+      return date.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    reactionBars.forEach(function (bar) {
+      var postId = bar.getAttribute("data-post-id");
+      var state = loadState(postId);
+
+      bar.querySelectorAll("[data-reaction]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          var reactionType = button.getAttribute("data-reaction");
+          state.reactions[reactionType] = (state.reactions[reactionType] || 0) + 1;
+          stateByPost[postId] = state;
+          saveState(postId);
+          syncReactionBars(postId);
+        });
+      });
+
+      syncReactionBars(postId);
+    });
+
+    if (commentThread) {
+      var form = commentThread.querySelector("[data-comment-form]");
+      var status = commentThread.querySelector(".comment-status");
+      var postId = commentThread.getAttribute("data-comment-thread");
+
+      renderComments(commentThread);
+
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var nameField = form.querySelector('input[name="name"]');
+          var commentField = form.querySelector('textarea[name="comment"]');
+          var name = nameField ? nameField.value.trim() : "";
+          var text = commentField ? commentField.value.trim() : "";
+
+          if (!name || !text) {
+            if (status) status.textContent = "Please add your name and a comment before posting.";
+            return;
+          }
+
+          var state = loadState(postId);
+          state.comments.push({
+            name: name,
+            text: text,
+            createdAt: new Date().toISOString()
+          });
+          stateByPost[postId] = state;
+          saveState(postId);
+
+          if (nameField) nameField.value = "";
+          if (commentField) commentField.value = "";
+          if (status) status.textContent = "Comment posted.";
+
+          renderComments(commentThread);
+        });
+      }
+    }
   }
 
   /* ---------------------------------------------------------------

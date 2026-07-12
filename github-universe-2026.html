@@ -64,7 +64,22 @@
 
     <section class="section-tight">
       <div class="container" style="max-width: 860px;">
-        <article class="glass glass-hover reveal" style="overflow:hidden;">
+        <div class="post-reactions-bar glass reveal" data-post-id="github-universe-2026" data-reaction-position="top">
+          <div class="post-reactions-summary">
+            <span class="eyebrow" style="margin-bottom:0;">React to this post</span>
+            <p style="margin:0;">Share a quick reaction before reading or leave a comment after the article.</p>
+          </div>
+          <div class="post-reactions-actions">
+            <button class="reaction-btn" type="button" data-reaction="like" aria-pressed="false">
+              Like <span data-reaction-count="like">0</span>
+            </button>
+            <button class="reaction-btn" type="button" data-reaction="dislike" aria-pressed="false">
+              Dislike <span data-reaction-count="dislike">0</span>
+            </button>
+          </div>
+        </div>
+
+        <article class="glass glass-hover reveal post-article" data-post-id="github-universe-2026" style="overflow:hidden;">
           <img src="assets/blog/post-01.jpg" alt="GitHub Universe 2026 event cover" loading="eager" width="1200" height="750" style="width:100%; height:auto; display:block;" />
           <div style="padding: clamp(24px, 4vw, 44px);">
             <p>If you're passionate about software development, AI, open source, or the future of technology, <strong>GitHub Universe 2026</strong> is one of the biggest events of the year—and the best part is that <strong>you can attend online for free</strong>.</p>
@@ -131,9 +146,46 @@
 
             <p>Happy coding! 🚀</p>
 
+            <div class="post-reactions-bar post-reactions-bottom glass" data-post-id="github-universe-2026" data-reaction-position="bottom">
+              <div class="post-reactions-summary">
+                <span class="eyebrow" style="margin-bottom:0;">React again</span>
+                <p style="margin:0;">If you made it to the end, let me know what you thought.</p>
+              </div>
+              <div class="post-reactions-actions">
+                <button class="reaction-btn" type="button" data-reaction="like" aria-pressed="false">
+                  Like <span data-reaction-count="like">0</span>
+                </button>
+                <button class="reaction-btn" type="button" data-reaction="dislike" aria-pressed="false">
+                  Dislike <span data-reaction-count="dislike">0</span>
+                </button>
+              </div>
+            </div>
+
             <hr class="divider" />
 
-            <p><em>Have you registered for GitHub Universe 2026? Let me know what sessions you're most excited to watch!</em></p>
+            <div class="comment-section" data-comment-thread="github-universe-2026">
+              <h2>Comments</h2>
+              <p>Leave a comment about the sessions you’re most excited for or anything you’d like to see at GitHub Universe.</p>
+
+              <form class="comment-form glass" data-comment-form>
+                <div class="comment-form-grid">
+                  <label>
+                    <span>Name</span>
+                    <input type="text" name="name" maxlength="60" placeholder="Your name" required />
+                  </label>
+                  <label class="comment-form-full">
+                    <span>Comment</span>
+                    <textarea name="comment" rows="4" maxlength="1000" placeholder="Write your comment" required></textarea>
+                  </label>
+                </div>
+                <div class="comment-form-footer">
+                  <p class="comment-status" aria-live="polite"></p>
+                  <button class="btn btn-primary btn-sm" type="submit">Post comment</button>
+                </div>
+              </form>
+
+              <div class="comment-list" data-comment-list aria-live="polite"></div>
+            </div>
           </div>
         </article>
       </div>
