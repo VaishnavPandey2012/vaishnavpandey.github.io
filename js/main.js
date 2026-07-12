@@ -218,7 +218,7 @@
 
     function loadState(postId) {
       if (stateByPost[postId]) return stateByPost[postId];
-      var fallback = { reactions: { like: 0, dislike: 0 }, comments: [] };
+      var fallback = { reactions: { like: 0, dislike: 0 }, comments: [], userReaction: null };
       try {
         var raw = window.localStorage.getItem(storageKey(postId));
         if (!raw) {
@@ -231,7 +231,8 @@
             like: Number(parsed.reactions && parsed.reactions.like) || 0,
             dislike: Number(parsed.reactions && parsed.reactions.dislike) || 0
           },
-          comments: Array.isArray(parsed.comments) ? parsed.comments : []
+          comments: Array.isArray(parsed.comments) ? parsed.comments : [],
+          userReaction: parsed.userReaction === "like" || parsed.userReaction === "dislike" ? parsed.userReaction : null
         };
       } catch (err) {
         stateByPost[postId] = fallback;
@@ -252,7 +253,7 @@
           var type = button.getAttribute("data-reaction");
           var countEl = button.querySelector("[data-reaction-count]");
           if (countEl) countEl.textContent = state.reactions[type] || 0;
-          var active = (state.reactions[type] || 0) > 0;
+          var active = state.userReaction === type;
           button.classList.toggle("is-active", active);
           button.setAttribute("aria-pressed", active ? "true" : "false");
         });
@@ -324,7 +325,19 @@
       bar.querySelectorAll("[data-reaction]").forEach(function (button) {
         button.addEventListener("click", function () {
           var reactionType = button.getAttribute("data-reaction");
-          state.reactions[reactionType] = (state.reactions[reactionType] || 0) + 1;
+          var previousReaction = state.userReaction;
+
+          if (previousReaction === reactionType) {
+            state.reactions[reactionType] = Math.max(0, (state.reactions[reactionType] || 0) - 1);
+            state.userReaction = null;
+          } else {
+            if (previousReaction) {
+              state.reactions[previousReaction] = Math.max(0, (state.reactions[previousReaction] || 0) - 1);
+            }
+            state.reactions[reactionType] = (state.reactions[reactionType] || 0) + 1;
+            state.userReaction = reactionType;
+          }
+
           stateByPost[postId] = state;
           saveState(postId);
           syncReactionBars(postId);
