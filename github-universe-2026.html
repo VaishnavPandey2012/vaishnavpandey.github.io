@@ -70,11 +70,15 @@
             <p style="margin:0;">Share a quick reaction before reading or leave a comment after the article.</p>
           </div>
           <div class="post-reactions-actions">
-            <button class="reaction-btn" type="button" data-reaction="like" aria-pressed="false">
-              Like <span data-reaction-count="like">0</span>
+            <button class="reaction-btn reaction-like" type="button" data-reaction="like" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3Z"/><path d="M7 11 11 3a2 2 0 0 1 2 2v2h5a2 2 0 0 1 2 2l-1 6a2 2 0 0 1-2 2H7"/></svg>
+              <span>Like</span>
+              <span class="reaction-count" data-reaction-count="like">0</span>
             </button>
-            <button class="reaction-btn" type="button" data-reaction="dislike" aria-pressed="false">
-              Dislike <span data-reaction-count="dislike">0</span>
+            <button class="reaction-btn reaction-dislike" type="button" data-reaction="dislike" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3Z"/><path d="M17 13 13 21a2 2 0 0 1-2-2v-2H6a2 2 0 0 1-2-2l1-6a2 2 0 0 1 2-2h10"/></svg>
+              <span>Dislike</span>
+              <span class="reaction-count" data-reaction-count="dislike">0</span>
             </button>
           </div>
         </div>
@@ -152,11 +156,15 @@
                 <p style="margin:0;">If you made it to the end, let me know what you thought.</p>
               </div>
               <div class="post-reactions-actions">
-                <button class="reaction-btn" type="button" data-reaction="like" aria-pressed="false">
-                  Like <span data-reaction-count="like">0</span>
+                <button class="reaction-btn reaction-like" type="button" data-reaction="like" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3Z"/><path d="M7 11 11 3a2 2 0 0 1 2 2v2h5a2 2 0 0 1 2 2l-1 6a2 2 0 0 1-2 2H7"/></svg>
+                  <span>Like</span>
+                  <span class="reaction-count" data-reaction-count="like">0</span>
                 </button>
-                <button class="reaction-btn" type="button" data-reaction="dislike" aria-pressed="false">
-                  Dislike <span data-reaction-count="dislike">0</span>
+                <button class="reaction-btn reaction-dislike" type="button" data-reaction="dislike" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3Z"/><path d="M17 13 13 21a2 2 0 0 1-2-2v-2H6a2 2 0 0 1-2-2l1-6a2 2 0 0 1 2-2h10"/></svg>
+                  <span>Dislike</span>
+                  <span class="reaction-count" data-reaction-count="dislike">0</span>
                 </button>
               </div>
             </div>
@@ -168,6 +176,16 @@
               <p>Leave a comment about the sessions you’re most excited for or anything you’d like to see at GitHub Universe.</p>
 
               <form class="comment-form glass" data-comment-form>
+                <div class="comment-form-header">
+                  <div class="comment-form-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 5V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </div>
+                  <div>
+                    <h3>Join the conversation</h3>
+                    <p>Comments are saved locally in your browser on this GitHub Pages site.</p>
+                  </div>
+                </div>
+
                 <div class="comment-form-grid">
                   <label>
                     <span>Name</span>

@@ -252,8 +252,9 @@
           var type = button.getAttribute("data-reaction");
           var countEl = button.querySelector("[data-reaction-count]");
           if (countEl) countEl.textContent = state.reactions[type] || 0;
-          button.classList.toggle("is-active", false);
-          button.setAttribute("aria-pressed", "false");
+          var active = (state.reactions[type] || 0) > 0;
+          button.classList.toggle("is-active", active);
+          button.setAttribute("aria-pressed", active ? "true" : "false");
         });
       });
     }
@@ -270,16 +271,29 @@
       }
 
       list.innerHTML = state.comments.slice().reverse().map(function (comment) {
+        var initials = getInitials(comment.name);
         return [
           '<article class="comment-item glass">',
           '<div class="comment-meta">',
-          '<strong>' + escapeHtml(comment.name) + '</strong>',
+          '<div class="comment-author">',
+          '<div class="comment-avatar" aria-hidden="true">' + escapeHtml(initials) + '</div>',
+          '<div><strong>' + escapeHtml(comment.name) + '</strong></div>',
+          '</div>',
           '<span>' + formatCommentTime(comment.createdAt) + '</span>',
           '</div>',
           '<p>' + escapeHtml(comment.text).replace(/\n/g, "<br />") + '</p>',
           '</article>'
         ].join("");
       }).join("");
+    }
+
+    function getInitials(name) {
+      return String(name || "")
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(function (part) { return part.charAt(0).toUpperCase(); })
+        .join("") || "?";
     }
 
     function escapeHtml(text) {
