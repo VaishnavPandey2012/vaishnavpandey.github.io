@@ -201,92 +201,30 @@
   }
 
   /* ---------------------------------------------------------------
-     Blog post reactions + comments for the GitHub Universe article.
-     Stored in localStorage so the page stays static but still feels
-     interactive.
+     Blog post reactions + comments.
+     -----------------------------------------------------------------
+     Backed by Firebase (Auth + Firestore) via window.AuthApp from
+     js/auth.js. Each reaction is stored as a document keyed by the
+     signed-in user's uid (posts/{postId}/reactions/{uid}), so a
+     single account can only ever hold one like OR one dislike on a
+     post no matter how many times it clicks, how many tabs it opens,
+     or whether it clears local storage — that's enforced by Firestore
+     itself (the doc ID is the uid, and the security rules only let a
+     user write their own doc), not by anything client-side that can
+     be reset. Signed-out visitors can read counts but must log in to
+     react or comment. See SETUP_GUIDE.md for the Firestore rules.
   ------------------------------------------------------------------ */
   function initPostReactions() {
     var reactionBars = document.querySelectorAll("[data-post-id]");
     var commentThread = document.querySelector("[data-comment-thread]");
     if (!reactionBars.length && !commentThread) return;
 
-    var stateByPost = {};
-
-    function storageKey(postId) {
-      return "blog-post-state:" + postId;
+    if (!window.AuthApp) {
+      console.error("AuthApp not found — make sure js/auth.js is loaded before js/main.js");
+      return;
     }
 
-    function loadState(postId) {
-      if (stateByPost[postId]) return stateByPost[postId];
-      var fallback = { reactions: { like: 0, dislike: 0 }, comments: [], userReaction: null };
-      try {
-        var raw = window.localStorage.getItem(storageKey(postId));
-        if (!raw) {
-          stateByPost[postId] = fallback;
-          return fallback;
-        }
-        var parsed = JSON.parse(raw);
-        stateByPost[postId] = {
-          reactions: {
-            like: Number(parsed.reactions && parsed.reactions.like) || 0,
-            dislike: Number(parsed.reactions && parsed.reactions.dislike) || 0
-          },
-          comments: Array.isArray(parsed.comments) ? parsed.comments : [],
-          userReaction: parsed.userReaction === "like" || parsed.userReaction === "dislike" ? parsed.userReaction : null
-        };
-      } catch (err) {
-        stateByPost[postId] = fallback;
-      }
-      return stateByPost[postId];
-    }
-
-    function saveState(postId) {
-      try {
-        window.localStorage.setItem(storageKey(postId), JSON.stringify(stateByPost[postId]));
-      } catch (err) {}
-    }
-
-    function syncReactionBars(postId) {
-      var state = loadState(postId);
-      document.querySelectorAll('[data-post-id="' + postId + '"]').forEach(function (bar) {
-        bar.querySelectorAll("[data-reaction]").forEach(function (button) {
-          var type = button.getAttribute("data-reaction");
-          var countEl = button.querySelector("[data-reaction-count]");
-          if (countEl) countEl.textContent = state.reactions[type] || 0;
-          var active = state.userReaction === type;
-          button.classList.toggle("is-active", active);
-          button.setAttribute("aria-pressed", active ? "true" : "false");
-        });
-      });
-    }
-
-    function renderComments(thread) {
-      var postId = thread.getAttribute("data-comment-thread");
-      var state = loadState(postId);
-      var list = thread.querySelector("[data-comment-list]");
-      if (!list) return;
-
-      if (!state.comments.length) {
-        list.innerHTML = '<div class="comment-empty glass"><p style="margin:0;">No comments yet. Be the first to share your thoughts.</p></div>';
-        return;
-      }
-
-      list.innerHTML = state.comments.slice().reverse().map(function (comment) {
-        var initials = getInitials(comment.name);
-        return [
-          '<article class="comment-item glass">',
-          '<div class="comment-meta">',
-          '<div class="comment-author">',
-          '<div class="comment-avatar" aria-hidden="true">' + escapeHtml(initials) + '</div>',
-          '<div><strong>' + escapeHtml(comment.name) + '</strong></div>',
-          '</div>',
-          '<span>' + formatCommentTime(comment.createdAt) + '</span>',
-          '</div>',
-          '<p>' + escapeHtml(comment.text).replace(/\n/g, "<br />") + '</p>',
-          '</article>'
-        ].join("");
-      }).join("");
-    }
+    var db = window.AuthApp.db;
 
     function getInitials(name) {
       return String(name || "")
@@ -307,7 +245,8 @@
     }
 
     function formatCommentTime(value) {
-      var date = new Date(value);
+      if (!value || !value.toDate) return "Just now";
+      var date = value.toDate();
       if (isNaN(date.getTime())) return "Just now";
       return date.toLocaleString(undefined, {
         month: "short",
@@ -318,69 +257,182 @@
       });
     }
 
+    /* -------- Reactions -------- */
+    function postReactionsRef(postId) {
+      return db.collection("posts").doc(postId).collection("reactions");
+    }
+
+    function refreshCounts(postId) {
+      var ref = postReactionsRef(postId);
+      return Promise.all([
+        ref.where("type", "==", "like").count().get(),
+        ref.where("type", "==", "dislike").count().get()
+      ]).then(function (results) {
+        return { like: results[0].data().count, dislike: results[1].data().count };
+      });
+    }
+
+    function syncReactionBars(postId) {
+      var user = window.AuthApp.getCurrentUser();
+      var userReactionPromise = user
+        ? postReactionsRef(postId).doc(user.uid).get().then(function (snap) {
+            return snap.exists ? snap.data().type : null;
+          })
+        : Promise.resolve(null);
+
+      Promise.all([refreshCounts(postId), userReactionPromise]).then(function (results) {
+        var counts = results[0];
+        var userReaction = results[1];
+        document.querySelectorAll('[data-post-id="' + postId + '"]').forEach(function (bar) {
+          bar.querySelectorAll("[data-reaction]").forEach(function (button) {
+            var type = button.getAttribute("data-reaction");
+            var countEl = button.querySelector("[data-reaction-count]");
+            if (countEl) countEl.textContent = counts[type] || 0;
+            var active = userReaction === type;
+            button.classList.toggle("is-active", active);
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+          });
+        });
+      });
+    }
+
     reactionBars.forEach(function (bar) {
       var postId = bar.getAttribute("data-post-id");
-      var state = loadState(postId);
 
       bar.querySelectorAll("[data-reaction]").forEach(function (button) {
         button.addEventListener("click", function () {
-          var reactionType = button.getAttribute("data-reaction");
-          var previousReaction = state.userReaction;
-
-          if (previousReaction === reactionType) {
-            state.reactions[reactionType] = Math.max(0, (state.reactions[reactionType] || 0) - 1);
-            state.userReaction = null;
-          } else {
-            if (previousReaction) {
-              state.reactions[previousReaction] = Math.max(0, (state.reactions[previousReaction] || 0) - 1);
-            }
-            state.reactions[reactionType] = (state.reactions[reactionType] || 0) + 1;
-            state.userReaction = reactionType;
+          var user = window.AuthApp.getCurrentUser();
+          if (!user) {
+            window.AuthApp.requireLogin();
+            return;
           }
 
-          stateByPost[postId] = state;
-          saveState(postId);
-          syncReactionBars(postId);
+          var reactionType = button.getAttribute("data-reaction");
+          var docRef = postReactionsRef(postId).doc(user.uid);
+          button.disabled = true;
+
+          docRef.get().then(function (snap) {
+            var existing = snap.exists ? snap.data().type : null;
+            var write;
+            if (existing === reactionType) {
+              // Clicking the same reaction again removes it.
+              write = docRef.delete();
+            } else {
+              write = docRef.set({
+                type: reactionType,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+            return write;
+          }).then(function () {
+            syncReactionBars(postId);
+          }).catch(function (err) {
+            console.error("Reaction failed:", err);
+          }).finally(function () {
+            button.disabled = false;
+          });
         });
       });
 
-      syncReactionBars(postId);
+      window.AuthApp.onReady(function () { syncReactionBars(postId); });
+      document.addEventListener("authStateChanged", function () { syncReactionBars(postId); });
     });
 
+    /* -------- Comments -------- */
     if (commentThread) {
       var form = commentThread.querySelector("[data-comment-form]");
       var status = commentThread.querySelector(".comment-status");
       var postId = commentThread.getAttribute("data-comment-thread");
+      var list = commentThread.querySelector("[data-comment-list]");
+      var nameField = form ? form.querySelector('input[name="name"]') : null;
 
-      renderComments(commentThread);
+      function renderComments(comments) {
+        if (!list) return;
+        if (!comments.length) {
+          list.innerHTML = '<div class="comment-empty glass"><p style="margin:0;">No comments yet. Be the first to share your thoughts.</p></div>';
+          return;
+        }
+        list.innerHTML = comments.map(function (comment) {
+          var initials = getInitials(comment.name);
+          return [
+            '<article class="comment-item glass">',
+            '<div class="comment-meta">',
+            '<div class="comment-author">',
+            '<div class="comment-avatar" aria-hidden="true">' + escapeHtml(initials) + '</div>',
+            '<div><strong>' + escapeHtml(comment.name) + '</strong></div>',
+            '</div>',
+            '<span>' + formatCommentTime(comment.createdAt) + '</span>',
+            '</div>',
+            '<p>' + escapeHtml(comment.text).replace(/\n/g, "<br />") + '</p>',
+            '</article>'
+          ].join("");
+        }).join("");
+      }
+
+      db.collection("posts").doc(postId).collection("comments")
+        .orderBy("createdAt", "desc")
+        .onSnapshot(function (snapshot) {
+          var comments = snapshot.docs.map(function (doc) { return doc.data(); });
+          renderComments(comments);
+        }, function (err) {
+          console.error("Comments listener failed:", err);
+        });
+
+      // Pre-fill / lock the name field to the signed-in account's name.
+      function syncCommentForm() {
+        var user = window.AuthApp.getCurrentUser();
+        var profile = window.AuthApp.getCurrentProfile();
+        if (!form) return;
+        if (user) {
+          if (nameField) {
+            nameField.value = (profile && profile.name) || user.displayName || user.email || "";
+            nameField.readOnly = true;
+          }
+          if (status) status.textContent = "";
+        } else {
+          if (nameField) nameField.readOnly = false;
+          if (status) status.textContent = "Log in to leave a comment.";
+        }
+      }
+      window.AuthApp.onReady(syncCommentForm);
+      document.addEventListener("authStateChanged", syncCommentForm);
 
       if (form) {
         form.addEventListener("submit", function (e) {
           e.preventDefault();
-          var nameField = form.querySelector('input[name="name"]');
-          var commentField = form.querySelector('textarea[name="comment"]');
-          var name = nameField ? nameField.value.trim() : "";
-          var text = commentField ? commentField.value.trim() : "";
-
-          if (!name || !text) {
-            if (status) status.textContent = "Please add your name and a comment before posting.";
+          var user = window.AuthApp.getCurrentUser();
+          if (!user) {
+            window.AuthApp.requireLogin();
             return;
           }
 
-          var state = loadState(postId);
-          state.comments.push({
+          var profile = window.AuthApp.getCurrentProfile();
+          var commentField = form.querySelector('textarea[name="comment"]');
+          var name = (profile && profile.name) || user.displayName || user.email || "Member";
+          var text = commentField ? commentField.value.trim() : "";
+
+          if (!text) {
+            if (status) status.textContent = "Write something before posting.";
+            return;
+          }
+
+          var submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn) submitBtn.disabled = true;
+
+          db.collection("posts").doc(postId).collection("comments").add({
+            uid: user.uid,
             name: name,
             text: text,
-            createdAt: new Date().toISOString()
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function () {
+            if (commentField) commentField.value = "";
+            if (status) status.textContent = "Comment posted.";
+          }).catch(function (err) {
+            console.error("Comment failed:", err);
+            if (status) status.textContent = "Something went wrong posting your comment.";
+          }).finally(function () {
+            if (submitBtn) submitBtn.disabled = false;
           });
-          stateByPost[postId] = state;
-          saveState(postId);
-
-          if (nameField) nameField.value = "";
-          if (commentField) commentField.value = "";
-          if (status) status.textContent = "Comment posted.";
-
-          renderComments(commentThread);
         });
       }
     }

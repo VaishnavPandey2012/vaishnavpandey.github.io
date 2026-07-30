@@ -26,15 +26,15 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Vaishnav Pandey — Founder, Product Engineer & Designer" />
   <meta property="og:description" content="Entrepreneur, web designer, and technology enthusiast focused on building businesses and creating premium digital experiences." />
-  <meta property="og:image" content="https://www.alexrivera.dev/assets/images/og-image.jpg" />
-  <meta property="og:url" content="https://www.alexrivera.dev/" />
+  <meta property="og:image" content="https://www.vaishnavpandey.dev/assets/images/og-image.jpg" />
+  <meta property="og:url" content="https://www.vaishnavpandey.dev/" />
   <meta property="og:site_name" content="Vaishnav Pandey" />
 
   <!-- Twitter / X Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Vaishnav Pandey — Founder, Product Engineer & Designer" />
   <meta name="twitter:description" content="Entrepreneur, web designer, and technology enthusiast focused on building businesses and creating premium digital experiences." />
-  <meta name="twitter:image" content="https://www.alexrivera.dev/assets/images/og-image.jpg" />
+  <meta name="twitter:image" content="https://www.vaishnavpandey.dev/assets/images/og-image.jpg" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32" />
@@ -56,8 +56,8 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "Vaishnav Pandey",
-    "url": "https://www.alexrivera.dev/",
-    "image": "https://www.alexrivera.dev/assets/images/profile-photo.jpg",
+    "url": "https://www.vaishnavpandey.dev/",
+    "image": "https://www.vaishnavpandey.dev/assets/images/profile-photo.jpg",
     "jobTitle": "Entrepreneur & Web Designer",
     "description": "Entrepreneur, web designer, and technology enthusiast focused on building businesses and creating premium digital experiences.",
     "sameAs": [
@@ -82,6 +82,23 @@
         <a href="index.html#social">Social</a>
         <a href="contact.html">Contact</a>
       </div>
+      <div class="nav-auth" id="nav-auth">
+        <a href="login.html" class="nav-auth-icon" id="nav-auth-signed-out" aria-label="Log in or sign up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="5"/></svg>
+        </a>
+        <div class="nav-auth-user" id="nav-auth-signed-in" hidden>
+          <button class="nav-auth-avatar" id="nav-auth-avatar-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+            <span id="nav-auth-initials">?</span>
+          </button>
+          <div class="nav-auth-menu" id="nav-auth-menu">
+            <div class="nav-auth-menu-name" id="nav-auth-name"></div>
+            <span class="nav-auth-menu-role" id="nav-auth-role"></span>
+            <a href="admin.html" id="nav-auth-admin-link" hidden>Admin</a>
+            <hr />
+            <button type="button" id="nav-auth-logout">Log out</button>
+          </div>
+        </div>
+      </div>
       <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
         <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
         <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
@@ -95,6 +112,7 @@
     <a href="blog.html">Blog</a>
     <a href="index.html#social">Social</a>
     <a href="contact.html">Contact</a>
+    <a href="login.html">Account</a>
   </div>
 
   <main id="main">
@@ -223,6 +241,37 @@
       </div>
     </section>
 
+    <!-- ============ BLOG PREVIEW ============ -->
+    <!-- CUSTOMIZE: duplicate the <article class="blog-card"> block per post, mirrors blog.html -->
+    <section class="section section-tight" id="blog-preview">
+      <div class="container">
+        <div class="section-heading reveal">
+          <span class="eyebrow">Writing</span>
+          <h2>From the blog</h2>
+          <p>Notes on events, projects, and ideas — the full archive lives on the blog page.</p>
+        </div>
+        <div class="grid blog-preview-grid">
+          <article class="blog-card glass glass-hover reveal">
+            <div class="blog-media">
+              <img src="assets/blog/post-01.jpg" alt="GitHub Universe 2026 event cover" loading="lazy" width="1200" height="750" />
+              <span class="blog-category">Event Notes</span>
+            </div>
+            <div class="blog-body">
+              <span class="blog-date">July 11, 2026</span>
+              <h3>I Registered for GitHub Universe 2026 Online for Free — Here's How You Can Too</h3>
+              <p>If you're into software development, AI, open source, or developer tools, here's a quick guide to getting the free online pass for GitHub Universe 2026.</p>
+              <a class="blog-readmore" href="github-universe-2026.html">Read More
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 5 7 7-7 7"></path></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+        <div class="text-center" style="margin-top:3rem;">
+          <a href="blog.html" class="btn btn-primary">Read the blog</a>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ SOCIAL HUB ============ -->
     <section class="section" id="social">
       <div class="container">
@@ -311,6 +360,12 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

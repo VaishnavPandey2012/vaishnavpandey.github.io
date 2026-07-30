@@ -1,31 +1,20 @@
 <!DOCTYPE html>
 <!--
-  BLOG PAGE
+  ADMIN PANEL
   ------------------------------------------------------------------
-  To add a new post: copy one <article class="blog-card"> block,
-  update the image, category, date, title, summary, and the
-  "Read More" link (point it at a hosted post, a PDF, or a page you
-  add yourself — this template does not include per-post pages,
-  to keep things simple for GitHub Pages). Recommended image size
-  is 1200x630 — drop new files into assets/blog/.
+  Lists registered users and lets an admin promote/demote roles
+  between "user" and "admin". Only visible/usable if the signed-in
+  account has role "admin" in Firestore — see SETUP_GUIDE.md for how
+  to make your first account an admin (it has to be done once, by
+  hand, in the Firebase console; after that, admins can promote
+  others from this page).
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blog — Vaishnav Pandey</title>
-  <meta name="description" content="Essays on product, engineering, and building companies, from Vaishnav Pandey." />
-  <link rel="canonical" href="https://www.vaishnavpandey.dev/blog.html" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Blog — Vaishnav Pandey" />
-  <meta property="og:description" content="Essays on product, engineering, and building companies." />
-  <meta property="og:image" content="https://www.vaishnavpandey.dev/assets/images/og-image.jpg" />
-  <meta property="og:url" content="https://www.vaishnavpandey.dev/blog.html" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Blog — Vaishnav Pandey" />
-  <meta name="twitter:image" content="https://www.vaishnavpandey.dev/assets/images/og-image.jpg" />
+  <title>Admin — Vaishnav Pandey</title>
+  <meta name="robots" content="noindex" />
 
   <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32" />
   <link rel="apple-touch-icon" href="assets/images/favicon.png" />
@@ -36,6 +25,13 @@
 
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/animations.css" />
+  <style>
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th, .admin-table td { text-align: left; padding: 12px 14px; border-bottom: var(--glass-border); font-size: 0.9rem; }
+    .admin-table th { color: var(--color-text-faint); font-weight: 600; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.04em; }
+    .role-pill { padding: 3px 10px; border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; background: var(--glass-fill-strong); color: var(--accent-aqua); }
+    .role-pill.is-admin { color: var(--accent-coral); }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
@@ -85,33 +81,23 @@
 
   <main id="main">
     <section class="page-hero container">
-      <span class="eyebrow reveal">Blog</span>
-      <h1 class="reveal reveal-delay-1">Writing about projects, ideas, and the in-between.</h1>
-      <p class="reveal reveal-delay-2">Notes from personal experiences — what worked, what didn't, and what I'd do differently.</p>
+      <span class="eyebrow reveal">Admin</span>
+      <h1 class="reveal reveal-delay-1">User &amp; role management</h1>
+      <p class="reveal reveal-delay-2">Promote trusted accounts to admin, or step someone back down to a regular member.</p>
     </section>
 
     <section class="section-tight">
       <div class="container">
-        <!-- CUSTOMIZE: duplicate an <article class="blog-card"> block per post -->
-        <div class="grid blog-grid">
-          <article class="blog-card glass glass-hover reveal">
-            <div class="blog-media">
-              <img src="assets/blog/post-01.jpg" alt="GitHub Universe 2026 event cover" loading="lazy" width="1200" height="750" />
-              <span class="blog-category">Event Notes</span>
-            </div>
-            <div class="blog-body">
-              <span class="blog-date">July 11, 2026</span>
-              <h3>I Registered for GitHub Universe 2026 Online for Free — Here's How You Can Too</h3>
-              <p>If you’re into software development, AI, open source, or developer tools, here’s a quick guide to getting the free online pass for GitHub Universe 2026.</p>
-              <a class="blog-readmore" href="github-universe-2026.html">Read More
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 5 7 7-7 7"></path></svg>
-              </a>
-            </div>
-          </article>
-
-          <div class="blog-note glass reveal">
-            <p style="margin:0;"><strong>Adding future posts:</strong> duplicate the card above and update the image, category, date, title, summary, and link.</p>
-          </div>
+        <div id="admin-guard" class="glass" style="padding:24px; display:none;">
+          <p style="margin:0;">You need an admin account to view this page. <a href="login.html" style="color:var(--accent-aqua);">Log in</a> with an admin account, or ask an existing admin to promote yours.</p>
+        </div>
+        <div id="admin-panel" class="glass" style="padding:24px; display:none; overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr>
+            </thead>
+            <tbody id="admin-user-rows"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -122,7 +108,7 @@
       <div class="footer-top">
         <div class="footer-brand">
           <div class="nav-logo"><span class="dot" aria-hidden="true"></span>Vaishnav Pandey</div>
-          <p>Author, Web designer and student. Based in Ranchi, India </p>
+          <p>Author, Web designer and student. Based in Ranchi, India</p>
         </div>
         <div class="footer-cols">
           <div class="footer-col">
@@ -142,7 +128,6 @@
       <hr class="divider" />
       <div class="footer-bottom">
         <p>&copy; <span data-year>2026</span> Vaishnav Pandey. All rights reserved.</p>
-        <p>Built with HTML, CSS &amp; JavaScript</p>
       </div>
     </div>
   </footer>
@@ -154,5 +139,6 @@
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>

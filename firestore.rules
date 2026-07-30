@@ -1,0 +1,69 @@
+rules_version = '2';
+
+// -------------------------------------------------------------------
+// Paste this into Firebase Console -> Firestore Database -> Rules,
+// then click "Publish". See SETUP_GUIDE.md for the full walkthrough.
+// -------------------------------------------------------------------
+//
+// This is what actually fixes the "anyone can like as many times as
+// they want" problem: a reaction document's ID is the user's uid, and
+// these rules only ever let a signed-in user write their OWN reaction
+// doc. There is no client-side count to fake or local storage to
+// clear — the database itself refuses a second like from the same
+// account.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- users/{uid} -------------------------------------------------
+    // Anyone can read profiles (needed to show names on comments).
+    // A user can create their own profile once, always starting as
+    // role "user" (never "admin" — that has to be granted by an
+    // existing admin, see below).
+    match /users/{uid} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && request.resource.data.role == 'user';
+
+      // A user may update their own profile as long as they don't
+      // touch their own role. An existing admin may update ANY
+      // profile (including role), which is how promotions/demotions
+      // in admin.html work.
+      allow update: if request.auth != null && (
+        (request.auth.uid == uid && request.resource.data.role == resource.data.role) ||
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+
+      allow delete: if false;
+    }
+
+    // ---- posts/{postId}/reactions/{uid} -------------------------------
+    // Doc ID == the reacting user's uid, so each account can hold at
+    // most one like/dislike doc per post, period.
+    match /posts/{postId}/reactions/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ---- posts/{postId}/comments/{commentId} --------------------------
+    // Anyone can read comments. Only a signed-in user can create one,
+    // and only as themselves (uid must match their own auth uid).
+    // A comment can be edited/deleted by its author or by an admin.
+    match /posts/{postId}/comments/{commentId} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() > 0
+                    && request.resource.data.text.size() < 2000;
+
+      allow update, delete: if request.auth != null && (
+        resource.data.uid == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+  }
+}

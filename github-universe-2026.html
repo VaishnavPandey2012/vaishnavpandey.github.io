@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>I Registered for GitHub Universe 2026 Online for Free — Here's How You Can Too</title>
   <meta name="description" content="A quick guide to registering for GitHub Universe 2026 online for free, plus notes on the in-person pass discount." />
-  <link rel="canonical" href="https://www.alexrivera.dev/github-universe-2026.html" />
+  <link rel="canonical" href="https://www.vaishnavpandey.dev/github-universe-2026.html" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="I Registered for GitHub Universe 2026 Online for Free — Here's How You Can Too" />
   <meta property="og:description" content="A quick guide to registering for GitHub Universe 2026 online for free, plus notes on the in-person pass discount." />
-  <meta property="og:image" content="https://www.alexrivera.dev/assets/blog/post-01.jpg" />
-  <meta property="og:url" content="https://www.alexrivera.dev/github-universe-2026.html" />
+  <meta property="og:image" content="https://www.vaishnavpandey.dev/assets/blog/post-01.jpg" />
+  <meta property="og:url" content="https://www.vaishnavpandey.dev/github-universe-2026.html" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="I Registered for GitHub Universe 2026 Online for Free — Here's How You Can Too" />
-  <meta name="twitter:image" content="https://www.alexrivera.dev/assets/blog/post-01.jpg" />
+  <meta name="twitter:image" content="https://www.vaishnavpandey.dev/assets/blog/post-01.jpg" />
 
   <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32" />
   <link rel="apple-touch-icon" href="assets/images/favicon.png" />
@@ -40,6 +40,23 @@
         <a href="index.html#social">Social</a>
         <a href="contact.html">Contact</a>
       </div>
+      <div class="nav-auth" id="nav-auth">
+        <a href="login.html" class="nav-auth-icon" id="nav-auth-signed-out" aria-label="Log in or sign up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="5"/></svg>
+        </a>
+        <div class="nav-auth-user" id="nav-auth-signed-in" hidden>
+          <button class="nav-auth-avatar" id="nav-auth-avatar-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+            <span id="nav-auth-initials">?</span>
+          </button>
+          <div class="nav-auth-menu" id="nav-auth-menu">
+            <div class="nav-auth-menu-name" id="nav-auth-name"></div>
+            <span class="nav-auth-menu-role" id="nav-auth-role"></span>
+            <a href="admin.html" id="nav-auth-admin-link" hidden>Admin</a>
+            <hr />
+            <button type="button" id="nav-auth-logout">Log out</button>
+          </div>
+        </div>
+      </div>
       <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
         <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
         <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
@@ -53,6 +70,7 @@
     <a href="blog.html">Blog</a>
     <a href="index.html#social">Social</a>
     <a href="contact.html">Contact</a>
+    <a href="login.html">Account</a>
   </div>
 
   <main id="main">
@@ -228,7 +246,7 @@
             <h4>Connect</h4>
             <a href="index.html#social">Social</a>
             <a href="contact.html">Contact</a>
-            <a href="mailto:hello@alexrivera.dev">Email</a>
+            <a href="mailto:vaishnav.pandeyartist2@gmail.com">Email</a>
           </div>
         </div>
       </div>
@@ -240,6 +258,12 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
