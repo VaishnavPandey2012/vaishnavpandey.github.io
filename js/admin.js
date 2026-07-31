@@ -16,6 +16,7 @@
 
     var guard = document.getElementById("admin-guard");
     var panel = document.getElementById("admin-panel");
+    var links = document.getElementById("admin-links");
     var rows = document.getElementById("admin-user-rows");
     var db = window.AuthApp.db;
 
@@ -62,10 +63,12 @@
       if (!user || !profile || profile.role !== "admin") {
         guard.style.display = "block";
         panel.style.display = "none";
+        links.style.display = "none";
         return;
       }
       guard.style.display = "none";
       panel.style.display = "block";
+      links.style.display = "grid";
       loadUsers();
     });
   });

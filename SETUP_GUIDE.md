@@ -129,9 +129,31 @@ admin has to be set by hand, once:
    liked, and that a second click *removes* the like instead of adding
    a second one.
 
-## Notes / things worth knowing
+## 7. Managing blog posts and projects as admin
 
-- **Free tier limits**: Firebase's free "Spark" plan comfortably
+Once you're an admin (step 5), your account dropdown shows an **Admin**
+link → the admin hub has two more links: **Manage blog posts** and
+**Manage projects**. Both work the same way:
+
+- Add a post/project through the form — it shows up immediately on
+  `blog.html` (and the homepage preview, for posts) or `projects.html`,
+  no rebuild or redeploy needed, since it's read live from Firestore.
+- Blog posts get their own page automatically at
+  `post.html?slug=your-post-title` using the same design as the
+  existing GitHub Universe post, reactions and comments included. If
+  you'd rather link to a hand-built HTML page instead (like
+  `github-universe-2026.html`), fill in the "External link" field and
+  that's used instead.
+- Cover images: there's no upload button, to avoid needing Firebase
+  Storage set up too. Either push an image to `assets/blog/` or
+  `assets/projects/` in your repo and reference that path, or paste
+  any public image URL.
+- If you make a fresh Firestore rules change (like the `blogPosts`/
+  `projects` rules already included in `firestore.rules`), remember to
+  re-publish them in the Rules tab — rules only take effect after
+  Publish, editing the file locally does nothing on its own.
+
+## Notes / things worth knowing: Firebase's free "Spark" plan comfortably
   covers a personal blog (50k reads/20k writes per day on Firestore,
   effectively unlimited auth users). You won't need to enter a credit
   card for this.

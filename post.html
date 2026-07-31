@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!--
+  GENERIC POST TEMPLATE
+  ------------------------------------------------------------------
+  Renders any post added through admin-blog.html. Reads ?slug=... ,
+  fetches blogPosts/{slug} from Firestore, and fills in this same
+  card/typography system used on the hand-built github-universe-2026
+  page, including the reaction buttons and comments (both keyed to
+  the post's slug, same as every other post).
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Post — Vaishnav Pandey</title>
+  <meta name="description" id="page-description" content="" />
+
+  <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="assets/images/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="navbar glass" aria-label="Primary">
+      <a href="index.html" class="nav-logo"><span class="dot" aria-hidden="true"></span>Vaishnav Pandey</a>
+      <div class="nav-links">
+        <a href="index.html#hero">Home</a>
+        <a href="about.html">About</a>
+        <a href="blog.html">Blog</a>
+        <a href="index.html#social">Social</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="nav-auth" id="nav-auth">
+        <a href="login.html" class="nav-auth-icon" id="nav-auth-signed-out" aria-label="Log in or sign up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="5"/></svg>
+        </a>
+        <div class="nav-auth-user" id="nav-auth-signed-in" hidden>
+          <button class="nav-auth-avatar" id="nav-auth-avatar-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+            <span id="nav-auth-initials">?</span>
+          </button>
+          <div class="nav-auth-menu" id="nav-auth-menu">
+            <div class="nav-auth-menu-name" id="nav-auth-name"></div>
+            <span class="nav-auth-menu-role" id="nav-auth-role"></span>
+            <a href="admin.html" id="nav-auth-admin-link" hidden>Admin</a>
+            <hr />
+            <button type="button" id="nav-auth-logout">Log out</button>
+          </div>
+        </div>
+      </div>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html#hero">Home</a>
+    <a href="about.html">About</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#social">Social</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Account</a>
+  </div>
+
+  <main id="main">
+    <section class="page-hero container" style="max-width: 860px;">
+      <span class="eyebrow reveal">Blog Post</span>
+      <h1 class="reveal reveal-delay-1" id="post-title">Loading…</h1>
+      <p class="reveal reveal-delay-2" id="post-date"></p>
+    </section>
+
+    <section class="section-tight">
+      <div class="container" style="max-width: 860px;">
+
+        <div id="post-not-found" class="glass" style="padding:32px; display:none;">
+          <p style="margin:0;">This post couldn't be found. <a href="blog.html" style="color:var(--accent-aqua);">Back to the blog</a>.</p>
+        </div>
+
+        <div id="post-loaded" style="display:none;">
+          <div class="post-reactions-bar glass reveal" data-post-id="" id="reactions-top" data-reaction-position="top">
+            <div class="post-reactions-summary">
+              <span class="eyebrow" style="margin-bottom:0;">React to this post</span>
+              <p style="margin:0;">Share a quick reaction before reading or leave a comment after the article.</p>
+            </div>
+            <div class="post-reactions-actions">
+              <button class="reaction-btn reaction-like" type="button" data-reaction="like" aria-pressed="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3Z"/><path d="M7 11 11 3a2 2 0 0 1 2 2v2h5a2 2 0 0 1 2 2l-1 6a2 2 0 0 1-2 2H7"/></svg>
+                <span>Like</span>
+                <span class="reaction-count" data-reaction-count="like">0</span>
+              </button>
+              <button class="reaction-btn reaction-dislike" type="button" data-reaction="dislike" aria-pressed="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3Z"/><path d="M17 13 13 21a2 2 0 0 1-2-2v-2H6a2 2 0 0 1-2-2l1-6a2 2 0 0 1 2-2h10"/></svg>
+                <span>Dislike</span>
+                <span class="reaction-count" data-reaction-count="dislike">0</span>
+              </button>
+            </div>
+          </div>
+
+          <article class="glass glass-hover reveal post-article" data-post-id="" id="post-article" style="overflow:hidden;">
+            <img id="post-image" src="" alt="" loading="eager" width="1200" height="750" style="width:100%; height:auto; display:block;" />
+            <div style="padding: clamp(24px, 4vw, 44px);">
+              <div id="post-body"></div>
+
+              <div class="post-reactions-bar post-reactions-bottom glass" data-post-id="" id="reactions-bottom" data-reaction-position="bottom">
+                <div class="post-reactions-summary">
+                  <span class="eyebrow" style="margin-bottom:0;">React again</span>
+                  <p style="margin:0;">If you made it to the end, let me know what you thought.</p>
+                </div>
+                <div class="post-reactions-actions">
+                  <button class="reaction-btn reaction-like" type="button" data-reaction="like" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3Z"/><path d="M7 11 11 3a2 2 0 0 1 2 2v2h5a2 2 0 0 1 2 2l-1 6a2 2 0 0 1-2 2H7"/></svg>
+                    <span>Like</span>
+                    <span class="reaction-count" data-reaction-count="like">0</span>
+                  </button>
+                  <button class="reaction-btn reaction-dislike" type="button" data-reaction="dislike" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3Z"/><path d="M17 13 13 21a2 2 0 0 1-2-2v-2H6a2 2 0 0 1-2-2l1-6a2 2 0 0 1 2-2h10"/></svg>
+                    <span>Dislike</span>
+                    <span class="reaction-count" data-reaction-count="dislike">0</span>
+                  </button>
+                </div>
+              </div>
+
+              <hr class="divider" />
+
+              <div class="comment-section" id="comment-section" data-comment-thread="">
+                <h2>Comments</h2>
+                <p>Log in to join the conversation.</p>
+
+                <form class="comment-form glass" data-comment-form>
+                  <div class="comment-form-header">
+                    <div class="comment-form-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 5V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div>
+                      <h3>Join the conversation</h3>
+                      <p>Log in to join the conversation — one account, one voice.</p>
+                    </div>
+                  </div>
+
+                  <div class="comment-form-grid">
+                    <label>
+                      <span>Name</span>
+                      <input type="text" name="name" maxlength="60" placeholder="Your name" required />
+                    </label>
+                    <label class="comment-form-full">
+                      <span>Comment</span>
+                      <textarea name="comment" rows="4" maxlength="1000" placeholder="Write your comment" required></textarea>
+                    </label>
+                  </div>
+                  <div class="comment-form-footer">
+                    <p class="comment-status" aria-live="polite"></p>
+                    <button class="btn btn-primary btn-sm" type="submit">Post comment</button>
+                  </div>
+                </form>
+
+                <div class="comment-list" data-comment-list aria-live="polite"></div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="nav-logo"><span class="dot" aria-hidden="true"></span>Vaishnav Pandey</div>
+          <p>Author, Web designer and student. Based in Ranchi, India</p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Site</h4>
+            <a href="index.html#hero">Home</a>
+            <a href="about.html">About</a>
+            <a href="blog.html">Blog</a>
+          </div>
+          <div class="footer-col">
+            <h4>Connect</h4>
+            <a href="index.html#social">Social</a>
+            <a href="contact.html">Contact</a>
+            <a href="mailto:vaishnav.pandeyartist2@gmail.com">Email</a>
+          </div>
+        </div>
+      </div>
+      <hr class="divider" />
+      <div class="footer-bottom">
+        <p>&copy; <span data-year>2026</span> Vaishnav Pandey. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/post.js"></script>
+</body>
+</html>

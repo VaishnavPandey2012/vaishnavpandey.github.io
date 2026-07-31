@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- CUSTOMIZE: replace https://www.alexrivera.dev with your real domain, and update lastmod dates as you edit pages. -->
+<!--
+  If you're using the vaishnavpandey.dev custom domain (see CNAME),
+  keep the URLs below as-is. If you're NOT using a custom domain,
+  replace https://www.vaishnavpandey.dev with
+  https://vaishnavpandey.github.io instead throughout this file.
+  Update lastmod dates whenever you meaningfully edit a page.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.alexrivera.dev/index.html</loc>
+    <loc>https://www.vaishnavpandey.dev/index.html</loc>
+    <lastmod>2026-07-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.alexrivera.dev/about.html</loc>
+    <loc>https://www.vaishnavpandey.dev/about.html</loc>
+    <lastmod>2026-07-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.alexrivera.dev/projects.html</loc>
+    <loc>https://www.vaishnavpandey.dev/projects.html</loc>
+    <lastmod>2026-07-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.alexrivera.dev/blog.html</loc>
+    <loc>https://www.vaishnavpandey.dev/blog.html</loc>
+    <lastmod>2026-07-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.alexrivera.dev/contact.html</loc>
+    <loc>https://www.vaishnavpandey.dev/github-universe-2026.html</loc>
+    <lastmod>2026-07-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.vaishnavpandey.dev/contact.html</loc>
+    <lastmod>2026-07-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>

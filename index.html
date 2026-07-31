@@ -15,8 +15,6 @@
 -->
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2461839849882305"
-     crossorigin="anonymous"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vaishnav Pandey — Entrepreneur, Web Designer &amp; Builder</title>
@@ -167,18 +165,25 @@
             </h2>
             <!-- CUSTOMIZE: short biography teaser -->
             <p>
-              Hi, I'm Vaishnav Pandey—a student, author, and web developer passionate about AI, technology, and entrepreneurship. I build websites, write books, and share my journey of learning, creating, and growing through meaningful projects.
+              I'm a self-taught engineer turned founder, based between Lisbon and
+              wherever the next customer meeting happens to be. My work sits at the
+              intersection of product strategy, interface design, and the kind of
+              backend architecture that lets a small team move like a much larger one.
             </p>
-            
+            <p>
+              I've founded two companies, advised a dozen more, and spent the years
+              in between as a product engineer at a growth-stage startup, shipping
+              the features that took it from Series A to household name.
+            </p>
             <a href="about.html" class="btn btn-ghost">More about me</a>
           </div>
           <div class="grid stats-grid reveal" style="grid-template-columns: repeat(2, 1fr);">
             <div class="stat-card glass glass-hover">
-              <span class="stat-num" data-count="9+"></span>
+              <span class="stat-num" data-count="7+"></span>
               <p class="stat-label">Books Written</p>
             </div>
             <div class="stat-card glass glass-hover">
-              <span class="stat-num" data-count="3" data-suffix="K+">0</span>
+              <span class="stat-num" data-count="2" data-suffix="K+">0</span>
               <p class="stat-label">Users reached</p>
             </div>
             <div class="stat-card glass glass-hover">
@@ -260,6 +265,7 @@
               </a>
             </div>
           </article>
+          <div id="dynamic-blog-preview"></div>
         </div>
         <div class="text-center" style="margin-top:3rem;">
           <a href="blog.html" class="btn btn-primary">Read the blog</a>
@@ -361,6 +367,21 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/content.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      window.AuthApp.onReady(function () {
+        window.ContentApp.fetchBlogPosts(window.AuthApp.db, 2).then(function (posts) {
+          var container = document.getElementById("dynamic-blog-preview");
+          if (!posts.length) return;
+          container.innerHTML = posts.map(function (post) {
+            return window.ContentApp.blogCardHtml(post, "reveal");
+          }).join("");
+          container.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("is-visible"); });
+        });
+      });
+    });
+  </script>
 </body>
 </html>

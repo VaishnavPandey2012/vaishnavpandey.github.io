@@ -91,7 +91,18 @@
         <div id="admin-guard" class="glass" style="padding:24px; display:none;">
           <p style="margin:0;">You need an admin account to view this page. <a href="login.html" style="color:var(--accent-aqua);">Log in</a> with an admin account, or ask an existing admin to promote yours.</p>
         </div>
+        <div id="admin-links" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 32px; display:none;">
+          <a href="admin-blog.html" class="glass glass-hover" style="padding:24px; display:block;">
+            <h3 style="margin-top:0;">Manage blog posts</h3>
+            <p style="margin-bottom:0; color:var(--color-text-muted); font-size:0.9rem;">Add, edit, or remove posts. Shows up on the homepage and blog page automatically.</p>
+          </a>
+          <a href="admin-projects.html" class="glass glass-hover" style="padding:24px; display:block;">
+            <h3 style="margin-top:0;">Manage projects</h3>
+            <p style="margin-bottom:0; color:var(--color-text-muted); font-size:0.9rem;">Add, edit, or remove entries on the Projects page.</p>
+          </a>
+        </div>
         <div id="admin-panel" class="glass" style="padding:24px; display:none; overflow-x:auto;">
+          <h2 style="margin-top:0;">Users &amp; roles</h2>
           <table class="admin-table">
             <thead>
               <tr><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr>

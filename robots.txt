@@ -1,5 +1,8 @@
-# CUSTOMIZE: update the sitemap URL below once you know your final domain.
 User-agent: *
 Allow: /
+Disallow: /login.html
+Disallow: /admin.html
+Disallow: /admin-blog.html
+Disallow: /admin-projects.html
 
-Sitemap: https://www.alexrivera.dev/sitemap.xml
+Sitemap: https://www.vaishnavpandey.dev/sitemap.xml

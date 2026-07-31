@@ -65,5 +65,22 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
       );
     }
+    // ---- blogPosts/{slug} ----------------------------------------------
+    // Public read. Only an account with role "admin" may create,
+    // edit, or delete a post — that's what makes admin-blog.html an
+    // admin-only tool even though the page itself is reachable by
+    // anyone who guesses the URL.
+    match /blogPosts/{slug} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ---- projects/{projectId} ------------------------------------------
+    match /projects/{projectId} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
   }
 }

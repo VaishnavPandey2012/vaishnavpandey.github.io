@@ -163,9 +163,25 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.18, rootMargin: "0px 0px -40px 0px" });
+    }, { threshold: 0, rootMargin: "0px 0px -10% 0px" });
 
-    revealEls.forEach(function (el) { observer.observe(el); });
+    revealEls.forEach(function (el) {
+      // Elements taller than the viewport (e.g. a blog post hero image
+      // + intro block) can start already covering the whole screen on
+      // load, which IntersectionObserver reports as "intersecting" —
+      // but on some browsers the very first observe() callback can be
+      // skipped by a paint timing race. As a safety net, also reveal
+      // anything that's already on-screen at load without waiting for
+      // the observer at all.
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add("is-visible");
+        fillSkillBars(el);
+        countUpAll(el);
+        return;
+      }
+      observer.observe(el);
+    });
   }
 
   function fillSkillBars(scope) {
@@ -215,8 +231,11 @@
      react or comment. See SETUP_GUIDE.md for the Firestore rules.
   ------------------------------------------------------------------ */
   function initPostReactions() {
-    var reactionBars = document.querySelectorAll("[data-post-id]");
-    var commentThread = document.querySelector("[data-comment-thread]");
+    var reactionBars = Array.prototype.filter.call(
+      document.querySelectorAll("[data-post-id]"),
+      function (el) { return el.getAttribute("data-post-id"); }
+    );
+    var commentThread = document.querySelector('[data-comment-thread]:not([data-comment-thread=""])');
     if (!reactionBars.length && !commentThread) return;
 
     if (!window.AuthApp) {
@@ -668,4 +687,8 @@
       });
     });
   }
+
+  // Exposed so post.html can re-run reaction/comment binding once its
+  // async Firestore fetch resolves the real post slug (see js/post.js).
+  window.initPostReactions = initPostReactions;
 })();

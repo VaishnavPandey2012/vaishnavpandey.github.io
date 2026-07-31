@@ -1,31 +1,17 @@
 <!DOCTYPE html>
 <!--
-  BLOG PAGE
+  ADMIN: MANAGE BLOG POSTS
   ------------------------------------------------------------------
-  To add a new post: copy one <article class="blog-card"> block,
-  update the image, category, date, title, summary, and the
-  "Read More" link (point it at a hosted post, a PDF, or a page you
-  add yourself — this template does not include per-post pages,
-  to keep things simple for GitHub Pages). Recommended image size
-  is 1200x630 — drop new files into assets/blog/.
+  Add/edit/delete posts stored in Firestore (blogPosts collection).
+  Only visible/usable to accounts with role "admin" — enforced both
+  here (UI) and in firestore.rules (the real enforcement).
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blog — Vaishnav Pandey</title>
-  <meta name="description" content="Essays on product, engineering, and building companies, from Vaishnav Pandey." />
-  <link rel="canonical" href="https://www.vaishnavpandey.dev/blog.html" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Blog — Vaishnav Pandey" />
-  <meta property="og:description" content="Essays on product, engineering, and building companies." />
-  <meta property="og:image" content="https://www.vaishnavpandey.dev/assets/images/og-image.jpg" />
-  <meta property="og:url" content="https://www.vaishnavpandey.dev/blog.html" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Blog — Vaishnav Pandey" />
-  <meta name="twitter:image" content="https://www.vaishnavpandey.dev/assets/images/og-image.jpg" />
+  <title>Manage Blog Posts — Admin</title>
+  <meta name="robots" content="noindex" />
 
   <link rel="icon" type="image/png" href="assets/images/favicon-32.png" sizes="32x32" />
   <link rel="apple-touch-icon" href="assets/images/favicon.png" />
@@ -85,34 +71,64 @@
 
   <main id="main">
     <section class="page-hero container">
-      <span class="eyebrow reveal">Blog</span>
-      <h1 class="reveal reveal-delay-1">Writing about projects, ideas, and the in-between.</h1>
-      <p class="reveal reveal-delay-2">Notes from personal experiences — what worked, what didn't, and what I'd do differently.</p>
+      <span class="eyebrow reveal">Admin</span>
+      <h1 class="reveal reveal-delay-1">Manage blog posts</h1>
+      <p class="reveal reveal-delay-2">New posts show up on the homepage preview and the blog page automatically.</p>
     </section>
 
     <section class="section-tight">
       <div class="container">
-        <!-- CUSTOMIZE: duplicate an <article class="blog-card"> block per post -->
-        <div class="grid blog-grid">
-          <article class="blog-card glass glass-hover reveal">
-            <div class="blog-media">
-              <img src="assets/blog/post-01.jpg" alt="GitHub Universe 2026 event cover" loading="lazy" width="1200" height="750" />
-              <span class="blog-category">Event Notes</span>
-            </div>
-            <div class="blog-body">
-              <span class="blog-date">July 11, 2026</span>
-              <h3>I Registered for GitHub Universe 2026 Online for Free — Here's How You Can Too</h3>
-              <p>If you’re into software development, AI, open source, or developer tools, here’s a quick guide to getting the free online pass for GitHub Universe 2026.</p>
-              <a class="blog-readmore" href="github-universe-2026.html">Read More
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 5 7 7-7 7"></path></svg>
-              </a>
-            </div>
-          </article>
+        <div id="admin-guard" class="glass" style="padding:24px; display:none;">
+          <p style="margin:0;">You need an admin account to view this page. <a href="login.html" style="color:var(--accent-aqua);">Log in</a> with an admin account.</p>
+        </div>
 
-          <div id="dynamic-blog-posts"></div>
+        <div id="admin-panel" style="display:none;">
+          <div class="glass reveal" style="padding: clamp(24px, 4vw, 40px); margin-bottom: 32px;">
+            <h2 id="form-heading" style="margin-top:0;">Add a new post</h2>
+            <form id="post-form">
+              <input type="hidden" name="editingId" value="" />
+              <label class="auth-field">
+                <span>Title</span>
+                <input type="text" name="title" required maxlength="120" />
+              </label>
+              <label class="auth-field">
+                <span>Category (e.g. "Event Notes")</span>
+                <input type="text" name="category" maxlength="40" />
+              </label>
+              <label class="auth-field">
+                <span>Date</span>
+                <input type="date" name="dateISO" required />
+              </label>
+              <label class="auth-field">
+                <span>Cover image</span>
+                <input type="text" name="imageUrl" placeholder="assets/blog/my-post.jpg or a full https:// image URL" />
+              </label>
+              <p style="font-size:0.82rem; color:var(--color-text-faint); margin:-10px 0 16px;">
+                Push an image to <code>assets/blog/</code> in your repo and use that path, or paste any public image URL (Unsplash, Imgur, etc.). There's no file uploader here to keep things simple.
+              </p>
+              <label class="auth-field">
+                <span>Summary (shown on the cards)</span>
+                <textarea name="summary" rows="2" maxlength="220" required style="padding:12px 14px; border-radius: var(--radius-sm); border: var(--glass-border); background: rgba(255,255,255,0.04); color: var(--color-text); font-family: inherit; font-size:0.95rem; resize:vertical;"></textarea>
+              </label>
+              <label class="auth-field">
+                <span>Full content (shown on the post's own page — one paragraph per line)</span>
+                <textarea name="content" rows="8" style="padding:12px 14px; border-radius: var(--radius-sm); border: var(--glass-border); background: rgba(255,255,255,0.04); color: var(--color-text); font-family: inherit; font-size:0.95rem; resize:vertical;"></textarea>
+              </label>
+              <label class="auth-field">
+                <span>External link (optional — use this instead of the built-in post page, e.g. to link a hand-built page like github-universe-2026.html)</span>
+                <input type="text" name="externalUrl" placeholder="Leave blank to use the built-in post page" />
+              </label>
+              <p class="auth-status" id="form-status" aria-live="polite"></p>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary">Save post</button>
+                <button type="button" id="cancel-edit" class="btn btn-ghost" style="display:none;">Cancel edit</button>
+              </div>
+            </form>
+          </div>
 
-          <div class="blog-note glass reveal">
-            <p style="margin:0;"><strong>Adding future posts:</strong> log in as an admin and use <a href="admin-blog.html" style="color:var(--accent-aqua);">Manage blog posts</a> — they'll appear here automatically.</p>
+          <div class="glass reveal" style="padding: clamp(24px, 4vw, 40px);">
+            <h2 style="margin-top:0;">Existing posts</h2>
+            <div id="post-list"></div>
           </div>
         </div>
       </div>
@@ -124,7 +140,7 @@
       <div class="footer-top">
         <div class="footer-brand">
           <div class="nav-logo"><span class="dot" aria-hidden="true"></span>Vaishnav Pandey</div>
-          <p>Author, Web designer and student. Based in Ranchi, India </p>
+          <p>Author, Web designer and student. Based in Ranchi, India</p>
         </div>
         <div class="footer-cols">
           <div class="footer-col">
@@ -144,7 +160,6 @@
       <hr class="divider" />
       <div class="footer-bottom">
         <p>&copy; <span data-year>2026</span> Vaishnav Pandey. All rights reserved.</p>
-        <p>Built with HTML, CSS &amp; JavaScript</p>
       </div>
     </div>
   </footer>
@@ -157,19 +172,6 @@
   <script src="js/auth.js"></script>
   <script src="js/content.js"></script>
   <script src="js/main.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      window.AuthApp.onReady(function () {
-        window.ContentApp.fetchBlogPosts(window.AuthApp.db, 40).then(function (posts) {
-          var container = document.getElementById("dynamic-blog-posts");
-          if (!posts.length) return;
-          container.innerHTML = posts.map(function (post) {
-            return window.ContentApp.blogCardHtml(post, "reveal");
-          }).join("");
-          container.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("is-visible"); });
-        });
-      });
-    });
-  </script>
+  <script src="js/admin-blog.js"></script>
 </body>
 </html>
