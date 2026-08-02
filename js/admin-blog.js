@@ -20,10 +20,18 @@
     var listEl = document.getElementById("post-list");
     var formHeading = document.getElementById("form-heading");
     var cancelBtn = document.getElementById("cancel-edit");
+    var hiddenContentField = document.getElementById("content-hidden-field");
+
+    var editor = new Quill("#content-editor", {
+      theme: "snow",
+      modules: { toolbar: "#content-editor-toolbar" },
+      placeholder: "Write the post. Select text to bold it, change its size, or change its color…"
+    });
 
     function resetForm() {
       form.reset();
       form.editingId.value = "";
+      editor.setContents([]);
       formHeading.textContent = "Add a new post";
       cancelBtn.style.display = "none";
       status.textContent = "";
@@ -60,8 +68,9 @@
             form.dateISO.value = post.dateISO || "";
             form.imageUrl.value = post.imageUrl || "";
             form.summary.value = post.summary || "";
-            form.content.value = post.content || "";
+            editor.root.innerHTML = C.renderContentHtml(post.content, "");
             form.externalUrl.value = post.externalUrl || "";
+            form.coverVideoUrl.value = post.coverVideoUrl || "";
             formHeading.textContent = "Editing: " + post.title;
             cancelBtn.style.display = "inline-flex";
             window.scrollTo({ top: form.offsetTop - 100, behavior: "smooth" });
@@ -91,13 +100,16 @@
         return;
       }
 
+      var contentHtml = editor.getText().trim() ? editor.root.innerHTML : "";
+
       var data = {
         title: title,
         category: form.category.value.trim(),
         dateISO: dateISO,
         imageUrl: form.imageUrl.value.trim(),
+        coverVideoUrl: form.coverVideoUrl.value.trim(),
         summary: summary,
-        content: form.content.value,
+        content: contentHtml,
         externalUrl: form.externalUrl.value.trim(),
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };

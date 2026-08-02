@@ -153,7 +153,25 @@ link → the admin hub has two more links: **Manage blog posts** and
   re-publish them in the Rules tab — rules only take effect after
   Publish, editing the file locally does nothing on its own.
 
-## Notes / things worth knowing: Firebase's free "Spark" plan comfortably
+## 8. Video covers and the rich text editor
+
+- **Video cover**: in the "Manage blog posts" form, the "Cover video" field
+  accepts either a YouTube link (any format — watch, shorts, youtu.be) or a
+  direct video file URL (`.mp4`/`.webm`, e.g. pushed into `assets/blog/`).
+  If set, it's used instead of the cover image: cards show a thumbnail with
+  a play badge (YouTube) or an auto-playing muted preview (direct file),
+  and the post's own page shows the real embedded player.
+- **Rich text editor**: the "Full content" field is now a proper editor
+  (bold, italic, underline, text size, text color, highlight color, lists,
+  links) instead of a plain textarea — select text and use the toolbar
+  above it. It saves as real HTML, so formatting shows up exactly as
+  written on the post page. Older posts written before this update (plain
+  text) still render fine — they're detected automatically and shown as
+  plain paragraphs.
+
+## Notes / things worth knowing
+
+- **Free tier limits**: Firebase's free "Spark" plan comfortably
   covers a personal blog (50k reads/20k writes per day on Firestore,
   effectively unlimited auth users). You won't need to enter a credit
   card for this.

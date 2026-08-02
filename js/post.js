@@ -41,15 +41,10 @@
       document.getElementById("post-title").textContent = post.title;
       document.getElementById("post-date").textContent = C.formatDate(post.dateISO) + (post.category ? " · " + post.category : "");
 
-      var img = document.getElementById("post-image");
-      img.src = post.imageUrl || "assets/blog/post-01.jpg";
-      img.alt = post.title;
+      document.getElementById("post-cover").innerHTML = C.coverMediaHtml(post, false);
 
       var bodyEl = document.getElementById("post-body");
-      var paragraphs = (post.content || post.summary || "").split(/\n+/).filter(Boolean);
-      bodyEl.innerHTML = paragraphs.map(function (p) {
-        return "<p>" + C.escapeHtml(p) + "</p>";
-      }).join("") || "<p>" + C.escapeHtml(post.summary || "") + "</p>";
+      bodyEl.innerHTML = C.renderContentHtml(post.content, post.summary);
 
       // Wire the real post id into every reaction bar / comment thread
       // on the page, then let main.js bind click handlers + listeners

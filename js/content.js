@@ -36,17 +36,70 @@
     return d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
   }
 
+  /* -------- Video covers -------- */
+  function youTubeId(url) {
+    if (!url) return null;
+    var m = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+    return m ? m[1] : null;
+  }
+
+  function isDirectVideoUrl(url) {
+    return /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(String(url || ""));
+  }
+
+  // card: true  -> small, non-interactive cover for a grid card (muted/looping or a thumbnail with a play badge)
+  // card: false -> full-size cover for the post's own page (real player / embed)
+  function coverMediaHtml(item, card) {
+    var videoUrl = item.coverVideoUrl;
+    var ytId = youTubeId(videoUrl);
+    var title = escapeHtml(item.title || "");
+
+    if (ytId) {
+      if (card) {
+        return '<img src="https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg" alt="' + title + '" loading="lazy" width="1200" height="750" />' +
+          '<span class="cover-play-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg></span>';
+      }
+      return '<div class="cover-video-embed"><iframe src="https://www.youtube.com/embed/' + ytId + '" title="' + title + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>';
+    }
+
+    if (videoUrl && isDirectVideoUrl(videoUrl)) {
+      if (card) {
+        return '<video src="' + escapeHtml(videoUrl) + '" muted loop autoplay playsinline preload="metadata"></video>';
+      }
+      return '<video src="' + escapeHtml(videoUrl) + '" controls preload="metadata"></video>';
+    }
+
+    var img = item.imageUrl || "assets/blog/post-01.jpg";
+    return '<img src="' + escapeHtml(img) + '" alt="' + title + '" loading="lazy" width="1200" height="750" />';
+  }
+
+  /* -------- Rich post content -------- */
+  // Posts written with the new editor store real HTML (bold, sizes,
+  // colors, etc). Older posts (from before the editor existed) stored
+  // plain text split on newlines. Detect which one we've got so both
+  // keep rendering correctly without needing to migrate old posts.
+  function looksLikeHtml(str) {
+    return /<[a-z][\s\S]*>/i.test(String(str || ""));
+  }
+
+  function renderContentHtml(content, fallbackSummary) {
+    var raw = content || "";
+    if (looksLikeHtml(raw)) return raw;
+    var source = raw || fallbackSummary || "";
+    var paragraphs = String(source).split(/\n+/).filter(Boolean);
+    return paragraphs.map(function (p) { return "<p>" + escapeHtml(p) + "</p>"; }).join("") || ("<p>" + escapeHtml(fallbackSummary || "") + "</p>");
+  }
+
   /* -------- Blog posts -------- */
   function blogPostHref(post) {
     return post.externalUrl ? post.externalUrl : "post.html?slug=" + encodeURIComponent(post.id);
   }
 
   function blogCardHtml(post, revealClass) {
-    var img = post.imageUrl || "assets/blog/post-01.jpg";
     return [
       '<article class="blog-card glass glass-hover ' + (revealClass || "reveal") + '">',
       '<div class="blog-media">',
-      '<img src="' + escapeHtml(img) + '" alt="' + escapeHtml(post.title) + '" loading="lazy" width="1200" height="750" />',
+      coverMediaHtml(post, true),
       post.category ? '<span class="blog-category">' + escapeHtml(post.category) + '</span>' : "",
       '</div>',
       '<div class="blog-body">',
@@ -113,6 +166,10 @@
     blogCardHtml: blogCardHtml,
     fetchBlogPosts: fetchBlogPosts,
     projectCardHtml: projectCardHtml,
-    fetchProjects: fetchProjects
+    fetchProjects: fetchProjects,
+    coverMediaHtml: coverMediaHtml,
+    renderContentHtml: renderContentHtml,
+    youTubeId: youTubeId,
+    isDirectVideoUrl: isDirectVideoUrl
   };
 })();
