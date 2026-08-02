@@ -283,11 +283,13 @@
 
     function refreshCounts(postId) {
       var ref = postReactionsRef(postId);
-      return Promise.all([
-        ref.where("type", "==", "like").count().get(),
-        ref.where("type", "==", "dislike").count().get()
-      ]).then(function (results) {
-        return { like: results[0].data().count, dislike: results[1].data().count };
+      return ref.get().then(function (snap) {
+        var counts = { like: 0, dislike: 0 };
+        snap.forEach(function (doc) {
+          var type = doc.data().type;
+          if (type === "like" || type === "dislike") counts[type] += 1;
+        });
+        return counts;
       });
     }
 
