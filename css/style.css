@@ -1481,3 +1481,21 @@ input, textarea, select {
   transition: transform var(--dur-slow) var(--ease-out);
 }
 .post-gallery-item:hover img { transform: scale(1.08); }
+
+/* =================================================================
+   23. Dynamic content wrapper fix
+   -------------------------------------------------------------------
+   #dynamic-blog-posts, #dynamic-blog-preview, and #dynamic-projects
+   are JS-injection targets living inside CSS Grid containers
+   (.blog-grid, .blog-preview-grid, .projects-grid). Without this,
+   the wrapper div itself becomes a single grid cell holding all the
+   injected cards stacked inside it, instead of each card becoming
+   its own grid item — display:contents makes the wrapper transparent
+   to the grid so its children lay out exactly as if they were direct
+   children of the grid container.
+   ================================================================= */
+#dynamic-blog-posts,
+#dynamic-blog-preview,
+#dynamic-projects {
+  display: contents;
+}
