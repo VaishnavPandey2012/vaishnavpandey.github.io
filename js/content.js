@@ -90,6 +90,27 @@
     return paragraphs.map(function (p) { return "<p>" + escapeHtml(p) + "</p>"; }).join("") || ("<p>" + escapeHtml(fallbackSummary || "") + "</p>");
   }
 
+  /* -------- Extra images (gallery) -------- */
+  // A post can have any number of additional images beyond the single
+  // cover image/video, stored as post.images (array of URLs). Renders
+  // as a simple clickable grid — click opens the full-size image in a
+  // new tab.
+  function galleryHtml(post) {
+    var images = Array.isArray(post.images) ? post.images.filter(Boolean) : [];
+    if (!images.length) return "";
+    var title = escapeHtml(post.title || "");
+    return (
+      '<div class="post-gallery">' +
+      images.map(function (url, i) {
+        var safeUrl = escapeHtml(url);
+        return '<a href="' + safeUrl + '" target="_blank" rel="noopener" class="post-gallery-item">' +
+          '<img src="' + safeUrl + '" alt="' + title + ' — image ' + (i + 2) + '" loading="lazy" />' +
+          '</a>';
+      }).join("") +
+      '</div>'
+    );
+  }
+
   /* -------- Blog posts -------- */
   function blogPostHref(post) {
     return post.externalUrl ? post.externalUrl : "post.html?slug=" + encodeURIComponent(post.id);
@@ -169,6 +190,7 @@
     fetchProjects: fetchProjects,
     coverMediaHtml: coverMediaHtml,
     renderContentHtml: renderContentHtml,
+    galleryHtml: galleryHtml,
     youTubeId: youTubeId,
     isDirectVideoUrl: isDirectVideoUrl
   };

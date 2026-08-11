@@ -46,6 +46,8 @@
       var bodyEl = document.getElementById("post-body");
       bodyEl.innerHTML = C.renderContentHtml(post.content, post.summary);
 
+      document.getElementById("post-gallery").innerHTML = C.galleryHtml(post);
+
       // Wire the real post id into every reaction bar / comment thread
       // on the page, then let main.js bind click handlers + listeners
       // now that these are no longer empty strings.

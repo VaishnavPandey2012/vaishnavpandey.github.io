@@ -148,6 +148,10 @@ link → the admin hub has two more links: **Manage blog posts** and
   Storage set up too. Either push an image to `assets/blog/` or
   `assets/projects/` in your repo and reference that path, or paste
   any public image URL.
+- Blog posts can also have extra images beyond the single cover: the
+  "Additional images" field on `admin-blog.html` takes one URL per
+  line and shows them as a gallery on the post's own page (not on the
+  card — cards stay to one cover image/video for a clean grid).
 - If you make a fresh Firestore rules change (like the `blogPosts`/
   `projects` rules already included in `firestore.rules`), remember to
   re-publish them in the Rules tab — rules only take effect after

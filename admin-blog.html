@@ -115,6 +115,13 @@
                 Paste any YouTube link (watch, shorts, or youtu.be — all work) and it'll show as a thumbnail with a play badge on cards, and the real video on the post page. Or paste a direct video file URL (from your repo's <code>assets/blog/</code> folder, or any host) and it'll autoplay muted as the card cover.
               </p>
               <label class="auth-field">
+                <span>Additional images (optional — one URL per line)</span>
+                <textarea name="images" rows="4" placeholder="assets/blog/photo-2.jpg&#10;https://example.com/photo-3.jpg" style="padding:12px 14px; border-radius: var(--radius-sm); border: var(--glass-border); background: rgba(255,255,255,0.04); color: var(--color-text); font-family: inherit; font-size:0.95rem; resize:vertical;"></textarea>
+              </label>
+              <p style="font-size:0.82rem; color:var(--color-text-faint); margin:-10px 0 16px;">
+                These show as a gallery on the post's own page (not on the card) — good for event photos, screenshots, or anything beyond the single cover image. Same rule as the cover image: push to <code>assets/blog/</code> and reference the path, or paste public URLs.
+              </p>
+              <label class="auth-field">
                 <span>Summary (shown on the cards)</span>
                 <textarea name="summary" rows="2" maxlength="220" required style="padding:12px 14px; border-radius: var(--radius-sm); border: var(--glass-border); background: rgba(255,255,255,0.04); color: var(--color-text); font-family: inherit; font-size:0.95rem; resize:vertical;"></textarea>
               </label>

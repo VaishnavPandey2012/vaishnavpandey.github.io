@@ -20,7 +20,6 @@
     var listEl = document.getElementById("post-list");
     var formHeading = document.getElementById("form-heading");
     var cancelBtn = document.getElementById("cancel-edit");
-    var hiddenContentField = document.getElementById("content-hidden-field");
 
     var editor = new Quill("#content-editor", {
       theme: "snow",
@@ -71,6 +70,7 @@
             editor.root.innerHTML = C.renderContentHtml(post.content, "");
             form.externalUrl.value = post.externalUrl || "";
             form.coverVideoUrl.value = post.coverVideoUrl || "";
+            form.images.value = Array.isArray(post.images) ? post.images.join("\n") : "";
             formHeading.textContent = "Editing: " + post.title;
             cancelBtn.style.display = "inline-flex";
             window.scrollTo({ top: form.offsetTop - 100, behavior: "smooth" });
@@ -102,12 +102,15 @@
 
       var contentHtml = editor.getText().trim() ? editor.root.innerHTML : "";
 
+      var imagesList = form.images.value.split("\n").map(function (u) { return u.trim(); }).filter(Boolean);
+
       var data = {
         title: title,
         category: form.category.value.trim(),
         dateISO: dateISO,
         imageUrl: form.imageUrl.value.trim(),
         coverVideoUrl: form.coverVideoUrl.value.trim(),
+        images: imagesList,
         summary: summary,
         content: contentHtml,
         externalUrl: form.externalUrl.value.trim(),
