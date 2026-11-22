@@ -384,30 +384,45 @@
   <script async="async" data-cfasync="false" src="https://bauval.org/21/fef603c7a3d7d82573cd1be71c48fbcb"></script>
   <div id="container-fef603c7a3d7d82573cd1be71c48fbcb"></div>
   <script data-cfasync="false" src="https://araplhn.org/4/ad30045ca122895ef09a6613d8fe216a"></script>
-  <script>
-  // Reload the whole page every 10 seconds (10000 ms)
-  setInterval(function () {
-    location.reload();
-  }, 10000);
-
-  // Scroll to the bottom of the page after each load
-  function scrollToBottom() {
-    window.scrollTo(0, document.documentElement.scrollHeight);
-  }
-
-  window.addEventListener("load", function () {
-    // Browsers sometimes restore the old scroll position after load,
-    // so scroll again shortly afterwards. Lazy-loaded images and
-    // Firebase blog posts also change the page height.
-    scrollToBottom();
-    setTimeout(scrollToBottom, 100);
-    setTimeout(scrollToBottom, 400);
-  });
+ <script>
+  var RELOAD_INTERVAL = 10000; // reload every 10 seconds
+  var CHECK_INTERVAL = 250;    // check the scroll position 4 times a second
 
   // Stop the browser from restoring the previous scroll position
   if ("scrollRestoration" in history) {
     history.scrollRestoration = "manual";
   }
+
+  function isAtBottom() {
+    var scrolled = window.scrollY + window.innerHeight;
+    var total = document.documentElement.scrollHeight;
+    return scrolled >= total - 2; // 2px tolerance
+  }
+
+  function scrollToBottom() {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  }
+
+  // Make sure we're at the bottom: if not, scroll down
+  function ensureBottom() {
+    if (!isAtBottom()) scrollToBottom();
+  }
+
+  // Scroll down when the page finishes loading
+  window.addEventListener("load", function () {
+    scrollToBottom();
+    setTimeout(ensureBottom, 100);
+    setTimeout(ensureBottom, 400);
+  });
+
+  // Keep checking, so if the page gets taller (lazy images, Firebase
+  // blog posts) or the user scrolls up, it returns to the bottom
+  setInterval(ensureBottom, CHECK_INTERVAL);
+
+  // Reload the whole page every 10 seconds
+  setInterval(function () {
+    location.reload();
+  }, RELOAD_INTERVAL);
 </script>
 </body>
 </html>
