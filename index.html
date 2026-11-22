@@ -387,16 +387,27 @@
   <script>
   // Reload the whole page every 1 second (1000 ms)
   setInterval(function () {
-    // Remember scroll position so the page doesn't jump to the top
-    sessionStorage.setItem("scrollY", window.scrollY);
     location.reload();
-  }, 2500);
+  }, 3000);
 
-  // Restore scroll position after each reload
+  // Scroll to the bottom of the page after each load
+  function scrollToBottom() {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  }
+
   window.addEventListener("load", function () {
-    var y = sessionStorage.getItem("scrollY");
-    if (y !== null) window.scrollTo(0, parseInt(y, 10));
+    // Browsers sometimes restore the old scroll position after load,
+    // so scroll again shortly afterwards. Lazy-loaded images and
+    // Firebase blog posts also change the page height.
+    scrollToBottom();
+    setTimeout(scrollToBottom, 100);
+    setTimeout(scrollToBottom, 400);
   });
+
+  // Stop the browser from restoring the previous scroll position
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
 </script>
 </body>
 </html>
